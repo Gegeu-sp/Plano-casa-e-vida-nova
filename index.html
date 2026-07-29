@@ -8,94 +8,172 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+  /* Paleta inspirada na tendência 2026 (Pantone Cloud Dancer + "quiet luxury"):
+     branco aveludado, terracota/argila e verde-sálvia sobre neutros quentes. */
   :root{
-    --paper:#EEF2F0; --card:#FFFFFF; --ink:#1B2A2F; --muted:#66787D;
-    --teal:#1F5B63; --teal-deep:#123338; --amber:#DE9145; --amber-soft:#F5E4D0;
-    --green:#5C9A76; --line:#E1E8E5; --shadow:0 1px 2px rgba(18,51,56,.05),0 8px 24px rgba(18,51,56,.06);
+    --paper:#F6F1EA; --card:#FFFFFF; --ink:#2A241F; --muted:#8D8172;
+    --clay:#B5673F; --clay-deep:#8A4B2C; --clay-soft:#F1DED0;
+    --sage:#7C8768; --sage-soft:#E7EBDD;
+    --gold:#C79A46; --gold-soft:#F1E6C8;
+    --line:#E9E1D3; --shadow:0 1px 2px rgba(42,36,31,.06),0 10px 28px rgba(42,36,31,.08);
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{-webkit-text-size-adjust:100%}
   body{font-family:'Inter',system-ui,sans-serif; background:var(--paper); color:var(--ink);
-    line-height:1.45; padding:18px 14px 70px; max-width:640px; margin:0 auto; -webkit-font-smoothing:antialiased}
-  .eyebrow{font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--teal); font-weight:600}
+    line-height:1.45; padding-bottom:70px; max-width:640px; margin:0 auto; -webkit-font-smoothing:antialiased}
+  .wrap{padding:0 14px}
+  .eyebrow{font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--clay); font-weight:600}
   h1{font-family:'Fraunces',Georgia,serif; font-weight:900; font-size:clamp(28px,8vw,40px); line-height:1.02; letter-spacing:-.01em; margin:6px 0 4px}
-  h1 em{font-style:italic; color:var(--teal)}
+  h1 em{font-style:italic; color:var(--clay)}
   .lede{color:var(--muted); font-size:14.5px; max-width:46ch}
 
-  .progress-card{background:linear-gradient(160deg,var(--teal),var(--teal-deep)); color:#fff;
+  /* ---- Capa ---- */
+  .hero{position:relative; height:clamp(220px,42vw,320px); overflow:hidden}
+  .hero img{width:100%; height:100%; object-fit:cover; object-position:50% 30%; display:block}
+  .hero::after{content:'';position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(42,36,31,.05) 0%, rgba(42,36,31,.35) 55%, rgba(42,36,31,.78) 100%)}
+  .hero-text{position:absolute; left:0; right:0; bottom:0; padding:18px 14px 16px; color:#fff}
+  .hero-text .eyebrow{color:#F1E6C8}
+  .hero-text h1{color:#fff}
+  .hero-text h1 em{color:var(--gold-soft); font-style:italic}
+  .hero-text .lede{color:rgba(255,255,255,.85)}
+
+  .progress-card{background:linear-gradient(160deg,var(--clay),var(--clay-deep)); color:#fff;
     border-radius:18px; padding:20px; margin:18px 0 10px; box-shadow:var(--shadow)}
   .pct-row{display:flex; align-items:baseline; gap:10px; margin-bottom:12px}
   .pct{font-family:'Fraunces',serif; font-weight:900; font-size:44px; line-height:1}
   .pct small{font-size:19px; opacity:.8}
   .pct-label{font-size:13px; opacity:.85; margin-left:auto; text-align:right; max-width:15ch}
-  .bar{height:12px; background:rgba(255,255,255,.18); border-radius:99px; overflow:hidden}
-  .bar > i{display:block; height:100%; width:0%; border-radius:99px; background:linear-gradient(90deg,var(--amber),#F0B778); transition:width .5s cubic-bezier(.2,.7,.2,1)}
+  .bar{height:12px; background:rgba(255,255,255,.2); border-radius:99px; overflow:hidden}
+  .bar > i{display:block; height:100%; width:0%; border-radius:99px; background:linear-gradient(90deg,var(--gold),#E8C87A); transition:width .5s cubic-bezier(.2,.7,.2,1)}
   .stats{display:flex; gap:10px; margin-top:14px}
-  .stat{flex:1; background:rgba(255,255,255,.1); border-radius:12px; padding:9px 12px}
+  .stat{flex:1; background:rgba(255,255,255,.12); border-radius:12px; padding:9px 12px}
   .stat .k{font-size:11px; text-transform:uppercase; letter-spacing:.06em; opacity:.8}
   .stat .v{font-family:'Fraunces',serif; font-weight:600; font-size:19px; margin-top:2px}
+  .budget{display:flex; align-items:center; gap:8px; margin-top:12px; background:rgba(255,255,255,.12); border-radius:12px; padding:10px 12px}
+  .budget .k{font-size:12px; font-weight:600; opacity:.9}
+  .budget input{width:110px; margin-left:auto; border:none; background:rgba(255,255,255,.18); color:#fff; font:inherit; font-weight:700; font-size:15px; border-radius:8px; padding:7px 10px; text-align:right; outline:none}
+  .budget input::placeholder{color:rgba(255,255,255,.6)}
+  .bud-status{font-size:12.5px; margin-top:8px; opacity:.9}
+  .bud-status.over{color:#FBD9B8; font-weight:600; opacity:1}
+  .bud-status.ok{color:#DCEBD1}
   .count-line{font-size:12.5px; opacity:.85; margin-top:10px}
+  .count-line b{font-weight:700}
+
+  .divcard,.capcard{background:var(--card); border:1px solid var(--line); border-radius:16px; margin-top:14px; padding:16px; box-shadow:var(--shadow)}
+  .divcard h3,.capcard h3{font-family:'Fraunces',serif; font-size:17px; font-weight:600}
+  .divcard .hint,.capcard .hint{font-size:12px; color:var(--muted); margin:3px 0 12px}
+  .names{display:flex; gap:8px; margin-bottom:6px}
+  .names label{flex:1; min-width:0}
+  .names .cap{font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); font-weight:600; display:block; margin-bottom:3px}
+  .names input,.capfields input{width:100%; font:inherit; font-size:14px; border:1px solid var(--line); border-radius:9px; padding:9px 11px; outline:none; background:#fff}
+  .names input:focus,.capfields input:focus{border-color:var(--clay)}
+  .divrow{display:flex; justify-content:space-between; font-size:14px; padding:8px 0; border-top:1px solid var(--line)}
+  .divrow .v{font-weight:600}
+  .acerto{margin-top:10px; background:var(--sage-soft); border-radius:10px; padding:11px 13px; font-weight:600; color:#4B5640; font-size:14px}
+
+  .capfields{display:flex; gap:8px; margin-bottom:10px}
+  .capfields label{flex:1; min-width:0}
+  .capfields .cap{font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); font-weight:600; display:block; margin-bottom:3px}
+  .capsum{margin-top:4px; border-radius:10px; padding:12px 13px; font-weight:600; font-size:14px}
+  .capsum.deficit{background:var(--clay-soft); color:var(--clay-deep)}
+  .capsum.superavit{background:var(--sage-soft); color:#4B5640}
+  .capsum small{display:block; font-weight:500; font-size:12px; margin-top:3px; opacity:.85}
+
+  .filters{display:flex; gap:8px; margin-top:16px; flex-wrap:wrap}
+  .chip{font:inherit; font-size:13px; font-weight:600; border:1px solid var(--line); background:#fff; color:var(--muted); border-radius:99px; padding:8px 15px; cursor:pointer}
+  .chip.on{background:var(--ink); color:#fff; border-color:var(--ink)}
 
   .group{background:var(--card); border:1px solid var(--line); border-radius:16px; margin-top:14px; overflow:hidden; box-shadow:var(--shadow)}
-  .group > header{display:flex; align-items:center; gap:11px; padding:13px 16px; cursor:pointer; user-select:none; background:linear-gradient(0deg,#fbfdfc,#fff)}
+  .group > header{display:flex; align-items:center; gap:11px; padding:13px 16px; cursor:pointer; user-select:none; background:linear-gradient(0deg,#fbf8f4,#fff)}
   .group > header .emoji{font-size:18px}
   .ghead{flex:1; min-width:0}
   .ghead h2{font-family:'Fraunces',serif; font-weight:600; font-size:17px; line-height:1.1}
   .ghead .gsub{font-size:12px; color:var(--muted); margin-top:2px}
-  .ghead .gsub b{color:var(--teal); font-weight:600}
+  .ghead .gsub b{color:var(--clay); font-weight:600}
   .chev{transition:transform .25s; color:var(--muted); font-size:13px}
   .group.collapsed .chev{transform:rotate(-90deg)}
   .items{list-style:none}
   .group.collapsed .items{display:none}
 
-  .item{display:flex; align-items:center; gap:11px; padding:11px 14px; border-top:1px solid var(--line); min-height:54px}
-  .box{flex:none; width:24px; height:24px; border-radius:8px; border:2px solid #C4D2CD; background:#fff; display:grid; place-items:center; cursor:pointer; transition:all .16s}
+  .item{padding:12px 14px; border-top:1px solid var(--line)}
+  .item-top{display:flex; align-items:center; gap:11px}
+  .box{flex:none; width:24px; height:24px; border-radius:8px; border:2px solid #D8CDBC; background:#fff; display:grid; place-items:center; cursor:pointer; transition:all .16s}
   .box svg{width:14px; height:14px; stroke:#fff; stroke-width:3.2; fill:none; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:20; stroke-dashoffset:20; transition:stroke-dashoffset .22s}
   .txt{flex:1; min-width:0; font-size:15px; font-weight:500; cursor:pointer}
-  .pill{font-size:10px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; color:var(--amber); background:var(--amber-soft); border-radius:6px; padding:2px 6px; margin-left:6px; white-space:nowrap}
-  .price{display:flex; align-items:center; gap:3px; flex:none; background:#F2F6F4; border:1px solid var(--line); border-radius:9px; padding:5px 8px}
-  .price .cur{font-size:12px; color:var(--muted); font-weight:600}
-  .price input{width:62px; border:none; background:none; font:inherit; font-size:14px; font-weight:600; text-align:right; color:var(--ink); outline:none}
-  .del{flex:none; width:26px; height:26px; border:none; background:none; color:#B7C6C1; font-size:20px; line-height:1; cursor:pointer; border-radius:7px}
-  .del:active{background:#F0F4F2; color:#E06B6B}
-  .item.done .box{background:var(--green); border-color:var(--green)}
+  .pill{font-size:10px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; color:var(--gold); background:var(--gold-soft); border-radius:6px; padding:2px 6px; margin-left:6px; white-space:nowrap}
+  .del{flex:none; width:26px; height:26px; border:none; background:none; color:#C9BCA9; font-size:20px; line-height:1; cursor:pointer; border-radius:7px}
+  .del:active{background:#F2ECE2; color:#B2543A}
+  .item-bottom{display:flex; align-items:center; gap:8px; margin:10px 0 0 35px; flex-wrap:wrap}
+  .fld{display:flex; align-items:center; gap:4px; background:#F7F2EA; border:1px solid var(--line); border-radius:9px; padding:4px 8px}
+  .fld .lbl{font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); font-weight:700}
+  .fld .cur{font-size:12px; color:var(--muted); font-weight:600}
+  .fld input{width:56px; border:none; background:none; font:inherit; font-size:14px; font-weight:600; text-align:right; color:var(--ink); outline:none}
+  .payer{display:flex; gap:5px; margin-left:auto}
+  .payer button{font:inherit; font-size:12px; font-weight:600; border:1px solid var(--line); background:#fff; color:var(--muted); border-radius:8px; padding:6px 10px; cursor:pointer; max-width:96px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .payer button.on{background:var(--clay); color:#fff; border-color:var(--clay)}
+  .item.done .box{background:var(--sage); border-color:var(--sage)}
   .item.done .box svg{stroke-dashoffset:0}
-  .item.done .txt{color:var(--muted); text-decoration:line-through; text-decoration-color:#B7C6C1}
+  .item.done .txt{color:var(--muted); text-decoration:line-through; text-decoration-color:#D8CDBC}
 
   .additem{padding:10px 14px; border-top:1px dashed var(--line)}
-  .add-toggle{font:inherit; font-size:13.5px; font-weight:600; color:var(--teal); background:none; border:none; cursor:pointer; padding:4px 0}
+  .add-toggle{font:inherit; font-size:13.5px; font-weight:600; color:var(--clay); background:none; border:none; cursor:pointer; padding:4px 0}
   .add-form{display:none; gap:8px; margin-top:8px; flex-wrap:wrap}
   .add-form.open{display:flex}
   .add-form input{font:inherit; font-size:14px; border:1px solid var(--line); border-radius:9px; padding:9px 11px; outline:none}
-  .add-form input:focus{border-color:var(--teal)}
+  .add-form input:focus{border-color:var(--clay)}
   .add-name{flex:1; min-width:130px}
-  .add-price{width:110px}
-  .add-save{font:inherit; font-size:13.5px; font-weight:600; color:#fff; background:var(--teal); border:none; border-radius:9px; padding:9px 15px; cursor:pointer}
-  .add-save:active{background:var(--teal-deep)}
+  .add-price{width:120px}
+  .add-save{font:inherit; font-size:13.5px; font-weight:600; color:#fff; background:var(--clay); border:none; border-radius:9px; padding:9px 15px; cursor:pointer}
+  .add-save:active{background:var(--clay-deep)}
 
   .add-group{margin-top:14px}
   .add-group-form{display:none; gap:8px; margin-top:8px; flex-wrap:wrap}
   .add-group-form.open{display:flex}
   .add-group-form input{font:inherit; font-size:14px; border:1px solid var(--line); border-radius:9px; padding:9px 11px; outline:none; flex:1; min-width:130px}
-  .add-group-form input:focus{border-color:var(--teal)}
+  .add-group-form input:focus{border-color:var(--clay)}
 
   .actions{display:flex; gap:10px; margin-top:18px}
   .btn{flex:1; font:inherit; font-size:14px; font-weight:600; border-radius:12px; padding:13px; cursor:pointer; text-align:center; border:1px solid var(--line)}
-  .btn.primary{color:#fff; background:var(--teal); border-color:var(--teal)}
-  .btn.primary:active{background:var(--teal-deep)}
+  .btn.primary{color:#fff; background:var(--clay); border-color:var(--clay)}
+  .btn.primary:active{background:var(--clay-deep)}
   .btn.ghost{color:var(--muted); background:#fff}
-  .btn.ghost:active{background:#E9EFEC}
+  .btn.ghost:active{background:#F1EBE0}
   .save-note{font-size:12.5px; color:var(--muted); text-align:center; margin-top:14px}
-  .save-note b{color:var(--teal)}
-  footer.credits{text-align:center; font-size:12px; color:var(--muted); margin-top:26px}
-  :focus-visible{outline:3px solid var(--amber); outline-offset:2px; border-radius:6px}
+  .save-note b{color:var(--clay)}
+  .sync-badge{display:flex; align-items:center; justify-content:center; gap:6px; font-size:12px; color:var(--muted); margin-top:10px}
+  .sync-badge b{color:var(--sage)}
+  .sync-badge.off b{color:var(--muted)}
+  .sync-badge button{font:inherit; font-size:12px; font-weight:600; color:var(--clay); background:none; border:none; cursor:pointer; text-decoration:underline; padding:0}
+  footer.credits{text-align:center; font-size:12px; color:var(--muted); margin-top:26px; padding:0 14px}
+  :focus-visible{outline:3px solid var(--gold); outline-offset:2px; border-radius:6px}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+  /* ---- Portão de login (só aparece se a nuvem estiver configurada) ---- */
+  .authgate{position:fixed; inset:0; background:rgba(42,36,31,.72); display:flex; align-items:center; justify-content:center; padding:20px; z-index:50}
+  .authgate[hidden]{display:none}
+  .authbox{background:#fff; border-radius:18px; padding:24px; max-width:360px; width:100%; box-shadow:var(--shadow)}
+  .authbox h2{font-family:'Fraunces',serif; font-size:22px; margin-bottom:6px}
+  .authbox p{font-size:13.5px; color:var(--muted); margin-bottom:16px}
+  .authbox input{width:100%; font:inherit; font-size:14px; border:1px solid var(--line); border-radius:9px; padding:11px 12px; outline:none; margin-bottom:10px}
+  .authbox input:focus{border-color:var(--clay)}
+  .authbox .btn{width:100%}
+  .auth-error{color:#B2543A; font-size:12.5px; margin-top:8px; min-height:16px}
+  .auth-skip{display:block; text-align:center; width:100%; margin-top:12px; font:inherit; font-size:12.5px; color:var(--muted); background:none; border:none; cursor:pointer; text-decoration:underline}
 </style>
 </head>
 <body>
-<div class="eyebrow">Argeu &amp; Mayara · recomeçando a vida juntos</div>
-<h1>Nossa casa, <em>item por item</em></h1>
-<p class="lede">Um passo de cada vez pra construir o nosso ninho e escrever essa história de amor. Marque o que já resolveram, ajuste os valores e adicione o que faltar — tudo salva sozinho aqui no navegador.</p>
+
+<div class="hero">
+  <img src="assets/capa-argeu-mayara.jpg" alt="Argeu e Mayara">
+  <div class="hero-text">
+    <div class="eyebrow">Argeu &amp; Mayara · recomeçando a vida juntos</div>
+    <h1>Nossa casa, <em>item por item</em></h1>
+    <p class="lede">Um passo de cada vez pra construir o nosso ninho e escrever essa história de amor.</p>
+  </div>
+</div>
+
+<div class="wrap">
 
 <div class="progress-card">
   <div class="pct-row">
@@ -107,7 +185,41 @@
     <div class="stat"><div class="k">Estimado total</div><div class="v" id="tot-est">R$ 0</div></div>
     <div class="stat"><div class="k">Já comprado</div><div class="v" id="tot-buy">R$ 0</div></div>
   </div>
+  <div class="budget">
+    <span class="k">Orçamento teto</span>
+    <input id="budget-input" inputmode="numeric" placeholder="defina R$">
+  </div>
+  <div class="bud-status" id="bud-status">Defina um teto pra acompanhar o quanto falta.</div>
   <div class="count-line"><b id="done">0</b> de <b id="total">0</b> itens · faltam <b id="left">0</b></div>
+</div>
+
+<div class="capcard">
+  <h3>Nosso capital</h3>
+  <p class="hint">Quanto vocês já guardaram e quanto guardam por mês — pra saber se dá pra cobrir tudo ou se falta.</p>
+  <div class="capfields">
+    <label><span class="cap">Guardam por mês</span><input id="cap-monthly" inputmode="numeric" placeholder="R$ 0"></label>
+    <label><span class="cap">Capital atual</span><input id="cap-atual" inputmode="numeric" placeholder="R$ 0"></label>
+  </div>
+  <div class="capsum" id="cap-summary">Preencha os campos acima pra ver o cálculo.</div>
+</div>
+
+<div class="divcard">
+  <h3>Divisão de custos</h3>
+  <p class="hint">Marque quem pagou cada item comprado (botões em cada linha) pra ver o acerto 50/50.</p>
+  <div class="names">
+    <label><span class="cap">Pessoa 1</span><input id="name-a" placeholder="Argeu"></label>
+    <label><span class="cap">Pessoa 2</span><input id="name-p" placeholder="Mayara"></label>
+  </div>
+  <div class="divrow"><span id="lab-a">Argeu pagou</span><span class="v" id="pay-a">R$ 0</span></div>
+  <div class="divrow"><span id="lab-p">Mayara pagou</span><span class="v" id="pay-p">R$ 0</span></div>
+  <div class="divrow"><span>Média justa (50/50)</span><span class="v" id="media">R$ 0</span></div>
+  <div class="acerto" id="acerto">Ninguém marcou compras ainda.</div>
+</div>
+
+<div class="filters">
+  <button class="chip on" data-f="all">Tudo</button>
+  <button class="chip" data-f="left">Só o que falta</button>
+  <button class="chip" data-f="ess">Só essenciais</button>
 </div>
 
 <div id="app"></div>
@@ -124,11 +236,45 @@
   <button class="btn primary" id="export">⬇︎ Baixar página pra enviar</button>
   <button class="btn ghost" id="reset">Reiniciar</button>
 </div>
-<div class="save-note">✓ <b>Salva automático</b> aqui no seu navegador. Pra enviar pra alguém ou guardar backup, use "Baixar página".</div>
+<div class="save-note">✓ <b>Salva automático</b> aqui no navegador. Pra enviar pra alguém ou guardar backup, use "Baixar página".</div>
+<div class="sync-badge" id="sync-badge">💾 Sincronização com a nuvem não configurada ainda</div>
+
 <footer class="credits">Feito com carinho pra casa e vida nova de Argeu &amp; Mayara 💛</footer>
 
-<script>
-/* ================= CONTEÚDO ================= */
+</div>
+
+<div class="authgate" id="authgate" hidden>
+  <div class="authbox">
+    <h2>Entrar</h2>
+    <p>Entrem com a conta de vocês dois pra sincronizar os dados entre os dois aparelhos.</p>
+    <input id="auth-email" type="email" placeholder="E-mail" autocomplete="username">
+    <input id="auth-pass" type="password" placeholder="Senha" autocomplete="current-password">
+    <button class="btn primary" id="auth-login">Entrar</button>
+    <div class="auth-error" id="auth-error"></div>
+    <button class="auth-skip" id="auth-skip">Continuar sem sincronizar (só neste aparelho)</button>
+  </div>
+</div>
+
+<script id="mainjs">
+/* ====================================================================
+   CONFIGURAÇÃO DA NUVEM (Firebase) — opcional
+   Pra sincronizar os dados entre os dois aparelhos, crie um projeto
+   Firebase gratuito e cole aqui os valores (veja o passo a passo no
+   README.md, seção "Sincronização entre os dois"). Enquanto os valores
+   abaixo estiverem como estão, o site funciona normalmente, só que
+   salvando apenas neste navegador.
+==================================================================== */
+const FIREBASE_CONFIG = {
+  apiKey: "COLOQUE_AQUI",
+  authDomain: "COLOQUE_AQUI",
+  projectId: "COLOQUE_AQUI",
+  storageBucket: "COLOQUE_AQUI",
+  messagingSenderId: "COLOQUE_AQUI",
+  appId: "COLOQUE_AQUI"
+};
+const HOUSEHOLD_DOC = 'casa-argeu-mayara';
+
+/* ================= CONTEÚDO PADRÃO ================= */
 const DEFAULT_GROUPS = [
   { g:'Já temos', emoji:'✅', items:[
     ['tv','TV',0,0,1],['sofa','Sofá',0,0,1],['utensilios','Utensílios diversos',0,0,1] ]},
@@ -156,78 +302,179 @@ const DEFAULT_GROUPS = [
 ];
 
 /* ================= ESTADO ================= */
-const KEY = 'argeu-mayara-checklist-v1';
-let model = [];
+const KEY = 'argeu-mayara-checklist-v2';
+const OLD_KEY = 'argeu-mayara-checklist-v1';
+let model = null;
+let filter = 'all';
+let auth = null, db = null, remoteRef = null, suppressNextWrite = false;
 
 function seed(){
-  return DEFAULT_GROUPS.map(gr => ({
-    g:gr.g, emoji:gr.emoji,
-    items:gr.items.map(it => ({ id:it[0], label:it[1], price:it[2], ess:!!it[3], have:!!it[4], checked:!!it[4] }))
-  }));
+  return {
+    budget: 0, capMonthly: 0, capAtual: 0, nameA: 'Argeu', nameP: 'Mayara',
+    groups: DEFAULT_GROUPS.map(gr => ({
+      g:gr.g, emoji:gr.emoji,
+      items:gr.items.map(it => ({ id:it[0], label:it[1], est:it[2], real:0, payer:'', ess:!!it[3], have:!!it[4], checked:!!it[4] }))
+    }))
+  };
+}
+function migrateOld(){
+  try{
+    const raw = localStorage.getItem(OLD_KEY);
+    if(!raw) return null;
+    const old = JSON.parse(raw);
+    if(!Array.isArray(old)) return null;
+    return {
+      budget:0, capMonthly:0, capAtual:0, nameA:'Argeu', nameP:'Mayara',
+      groups: old.map(gr=>({ g:gr.g, emoji:gr.emoji,
+        items:gr.items.map(it=>({ id:it.id, label:it.label, est:it.price||0, real:0, payer:'', ess:!!it.ess, have:!!it.have, checked:!!it.checked })) }))
+    };
+  }catch(e){ return null; }
+}
+function normalizeModel(){
+  if(!model.nameA) model.nameA='Argeu';
+  if(!model.nameP) model.nameP='Mayara';
+  if(!model.budget) model.budget=model.budget||0;
+  if(!model.capMonthly) model.capMonthly=model.capMonthly||0;
+  if(!model.capAtual) model.capAtual=model.capAtual||0;
 }
 function loadModel(){
-  if(window.__INITIAL__ && window.__INITIAL__.groups){ model = window.__INITIAL__.groups; return; }
+  if(window.__INITIAL__ && window.__INITIAL__.groups){ model = window.__INITIAL__; normalizeModel(); return; }
   try{
     const raw = localStorage.getItem(KEY);
-    model = raw ? JSON.parse(raw) : seed();
+    model = raw ? JSON.parse(raw) : (migrateOld() || seed());
   }catch(e){ model = seed(); }
+  normalizeModel();
 }
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify(model)); }catch(e){} }
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(model)); }catch(e){}
+  if(remoteRef){ remoteRef.set({ model, updatedAt: Date.now() }).catch(()=>{}); }
+}
 
 /* ================= HELPERS ================= */
 const money = n => 'R$ ' + Math.round(n||0).toLocaleString('pt-BR');
 const parseMoney = s => { const c=(s||'').toString().replace(/\./g,'').replace(',','.').replace(/[^\d.]/g,''); const n=parseFloat(c); return isNaN(n)?0:n; };
+const eff = it => (it.real>0 ? it.real : it.est) || 0;
 const uid = () => 'x'+Math.random().toString(36).slice(2,8);
-const check = () => '<svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg>';
+const svgCheck = () => '<svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg>';
 function escapeHtml(s){ return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 const set = (id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
+const matches = it => filter==='all' ? true : filter==='left' ? !it.checked : it.ess;
+function updateGroupSubtotal(gi){
+  const gr = model.groups[gi]; if(!gr) return;
+  const done = gr.items.filter(i=>i.checked).length;
+  const sub = gr.items.reduce((s,i)=>s+eff(i),0);
+  const el = document.getElementById('gsub-'+gi);
+  if(el) el.innerHTML = 'Subtotal <b>'+money(sub)+'</b> · '+done+'/'+gr.items.length+' itens';
+}
+function updatePayerLabels(){
+  document.querySelectorAll('.payer button[data-p="A"]').forEach(b=>{ b.textContent = model.nameA; });
+  document.querySelectorAll('.payer button[data-p="P"]').forEach(b=>{ b.textContent = model.nameP; });
+}
 
 /* ================= RENDER ================= */
 function render(){
   const app = document.getElementById('app');
-  app.innerHTML = model.map((gr,gi)=>{
+  app.innerHTML = model.groups.map((gr,gi)=>{
     const done = gr.items.filter(i=>i.checked).length;
-    const sub = gr.items.reduce((s,i)=>s+(i.price||0),0);
-    const rows = gr.items.map((it,ii)=>`
+    const sub = gr.items.reduce((s,i)=>s+eff(i),0);
+    const rowsData = gr.items.map((it,ii)=>({it,ii})).filter(o=>matches(o.it));
+    if(rowsData.length===0 && filter!=='all') return '';
+    const rows = rowsData.map(({it,ii})=>`
       <li class="item ${it.checked?'done':''}" data-g="${gi}" data-i="${ii}">
-        <span class="box" data-act="check">${check()}</span>
-        <span class="txt" data-act="check">${escapeHtml(it.label)}${it.ess?'<span class="pill">Essencial</span>':''}</span>
-        <span class="price"><span class="cur">R$</span><input inputmode="numeric" data-act="price" value="${it.price?it.price:''}" placeholder="0"></span>
-        <button class="del" data-act="del" aria-label="Remover">×</button>
+        <div class="item-top">
+          <span class="box" data-act="check">${svgCheck()}</span>
+          <span class="txt" data-act="check">${escapeHtml(it.label)}${it.ess?'<span class="pill">Essencial</span>':''}</span>
+          <button class="del" data-act="del" aria-label="Remover">×</button>
+        </div>
+        <div class="item-bottom">
+          <span class="fld"><span class="lbl">Est</span><span class="cur">R$</span><input inputmode="numeric" data-act="est" value="${it.est?it.est:''}" placeholder="0"></span>
+          <span class="fld"><span class="lbl">Real</span><span class="cur">R$</span><input inputmode="numeric" data-act="real" value="${it.real?it.real:''}" placeholder="0"></span>
+          <span class="payer">
+            <button data-act="payer" data-p="A" class="${it.payer==='A'?'on':''}">${escapeHtml(model.nameA)}</button>
+            <button data-act="payer" data-p="P" class="${it.payer==='P'?'on':''}">${escapeHtml(model.nameP)}</button>
+          </span>
+        </div>
       </li>`).join('');
-    return `<section class="group" data-gi="${gi}">
-      <header data-toggle>
-        <span class="emoji">${gr.emoji}</span>
-        <span class="ghead"><h2>${escapeHtml(gr.g)}</h2>
-          <span class="gsub">Subtotal <b>${money(sub)}</b> · ${done}/${gr.items.length} itens</span></span>
-        <span class="chev">▼</span>
-      </header>
-      <ul class="items">${rows}
+    const addForm = filter==='all' ? `
         <li class="additem">
           <button class="add-toggle" data-act="add-open">+ Adicionar item</button>
           <div class="add-form">
             <input class="add-name" placeholder="Nome do item" data-act="add-name">
-            <input class="add-price" inputmode="numeric" placeholder="R$ (opcional)" data-act="add-price">
+            <input class="add-price" inputmode="numeric" placeholder="R$ estimado" data-act="add-price">
             <button class="add-save" data-act="add-save">Adicionar</button>
           </div>
-        </li>
-      </ul>
+        </li>` : '';
+    return `<section class="group" data-gi="${gi}">
+      <header data-toggle>
+        <span class="emoji">${gr.emoji}</span>
+        <span class="ghead"><h2>${escapeHtml(gr.g)}</h2>
+          <span class="gsub" id="gsub-${gi}">Subtotal <b>${money(sub)}</b> · ${done}/${gr.items.length} itens</span></span>
+        <span class="chev">▼</span>
+      </header>
+      <ul class="items">${rows}${addForm}</ul>
     </section>`;
   }).join('');
+
+  document.getElementById('budget-input').value = model.budget ? model.budget : '';
+  document.getElementById('cap-monthly').value = model.capMonthly ? model.capMonthly : '';
+  document.getElementById('cap-atual').value = model.capAtual ? model.capAtual : '';
+  document.getElementById('name-a').value = model.nameA;
+  document.getElementById('name-p').value = model.nameP;
+
   updateTotals();
 }
 
 function updateTotals(){
-  const all = model.flatMap(g=>g.items);
+  const all = model.groups.flatMap(g=>g.items);
   const done = all.filter(i=>i.checked).length, total=all.length, left=total-done;
   const pct = total? Math.round(done/total*100):0;
-  const est = all.reduce((s,i)=>s+(i.price||0),0);
-  const buy = all.filter(i=>i.checked).reduce((s,i)=>s+(i.price||0),0);
+  const est = all.reduce((s,i)=>s+(i.est||0),0);
+  const buy = all.filter(i=>i.checked).reduce((s,i)=>s+eff(i),0);
   set('pct',pct); set('done',done); set('total',total); set('left',left);
   set('tot-est',money(est)); set('tot-buy',money(buy));
   const bf=document.getElementById('barfill'); if(bf) bf.style.width = pct+'%';
   set('milestone', pct===100?'prontos pra morar juntos! 🎉': pct>=75?'quase lá — reta final':
       pct>=50?'mais da metade da casa': pct>=25?'já tá tomando forma':'montando o ninho…');
+
+  // orçamento
+  const bs = document.getElementById('bud-status');
+  if(model.budget>0){
+    if(est>model.budget){ bs.className='bud-status over'; bs.textContent='⚠️ A estimativa passou o teto em '+money(est-model.budget)+'.'; }
+    else { bs.className='bud-status ok'; bs.textContent='Dentro do teto — folga de '+money(model.budget-est)+'.'; }
+  } else { bs.className='bud-status'; bs.textContent='Defina um teto pra acompanhar o quanto falta.'; }
+
+  // capital / déficit
+  const capEl = document.getElementById('cap-summary');
+  const falta = est - (model.capAtual||0);
+  if(!model.capMonthly && !model.capAtual){
+    capEl.className='capsum'; capEl.textContent='Preencha os campos acima pra ver o cálculo.';
+  } else if(falta<=0){
+    capEl.className='capsum superavit';
+    capEl.innerHTML = 'Superávit de '+money(-falta)+' — já dá pra cobrir tudo que falta! 🎉';
+  } else {
+    let extra = '';
+    if(model.capMonthly>0){
+      const meses = Math.ceil(falta/model.capMonthly);
+      extra = '<small>No ritmo atual, dá pra fechar a conta em cerca de '+meses+' '+(meses===1?'mês':'meses')+'.</small>';
+    } else {
+      extra = '<small>Defina "guardam por mês" pra estimar em quantos meses fecha a conta.</small>';
+    }
+    capEl.className='capsum deficit';
+    capEl.innerHTML = 'Déficit de '+money(falta)+' considerando tudo que ainda falta comprar.'+extra;
+  }
+
+  // divisão
+  const chk = all.filter(i=>i.checked);
+  const payA = chk.filter(i=>i.payer==='A').reduce((s,i)=>s+eff(i),0);
+  const payP = chk.filter(i=>i.payer==='P').reduce((s,i)=>s+eff(i),0);
+  const totPay = payA+payP, media = totPay/2, saldoA = payA-media;
+  set('lab-a', model.nameA+' pagou'); set('lab-p', model.nameP+' pagou');
+  set('pay-a',money(payA)); set('pay-p',money(payP)); set('media',money(media));
+  const ac=document.getElementById('acerto');
+  if(totPay===0) ac.textContent='Ninguém marcou compras ainda.';
+  else if(Math.abs(saldoA)<1) ac.textContent='Tá quitado ✓ — cada um pagou a média.';
+  else if(saldoA>0) ac.textContent=model.nameP+' deve '+money(saldoA)+' pro '+model.nameA+'.';
+  else ac.textContent=model.nameA+' deve '+money(-saldoA)+' pra '+model.nameP+'.';
 }
 
 /* ================= EVENTOS ================= */
@@ -240,17 +487,21 @@ function wire(){
     const type = act.dataset.act;
     const li = e.target.closest('.item'); const sec = e.target.closest('.group');
     if(type==='check' && li){ const it=item(li); it.checked=!it.checked; save(); render(); }
-    else if(type==='del' && li){ model[+li.dataset.g].items.splice(+li.dataset.i,1); save(); render(); }
+    else if(type==='del' && li){ model.groups[+li.dataset.g].items.splice(+li.dataset.i,1); save(); render(); }
+    else if(type==='payer' && li){ const it=item(li); const p=act.dataset.p; it.payer = it.payer===p ? '' : p; save(); render(); }
     else if(type==='add-open'){ act.nextElementSibling.classList.toggle('open'); const n=act.nextElementSibling.querySelector('.add-name'); if(n) n.focus(); }
     else if(type==='add-save'){ addItem(sec); }
   });
   app.addEventListener('change', e=>{
-    const inp = e.target.closest('input[data-act="price"]'); if(!inp) return;
-    item(e.target.closest('.item')).price = parseMoney(inp.value); save(); render();
+    const li = e.target.closest('.item'); if(!li) return;
+    const gi = +li.dataset.g;
+    if(e.target.dataset.act==='est'){ item(li).est = parseMoney(e.target.value); save(); updateGroupSubtotal(gi); updateTotals(); }
+    else if(e.target.dataset.act==='real'){ item(li).real = parseMoney(e.target.value); save(); updateGroupSubtotal(gi); updateTotals(); }
   });
   app.addEventListener('keydown', e=>{
     if(e.key==='Enter' && e.target.closest('.add-form')){ e.preventDefault(); addItem(e.target.closest('.group')); }
   });
+
   document.getElementById('reset').addEventListener('click', ()=>{
     if(confirm('Reiniciar a lista com os itens e valores padrão? Isso apaga o que vocês personalizaram.')){
       model = seed(); save(); render();
@@ -266,15 +517,29 @@ function wire(){
   document.getElementById('group-name').addEventListener('keydown', e=>{
     if(e.key==='Enter'){ e.preventDefault(); addGroup(); }
   });
+
+  document.getElementById('budget-input').addEventListener('change', e=>{ model.budget = parseMoney(e.target.value); save(); updateTotals(); });
+  document.getElementById('cap-monthly').addEventListener('change', e=>{ model.capMonthly = parseMoney(e.target.value); save(); updateTotals(); });
+  document.getElementById('cap-atual').addEventListener('change', e=>{ model.capAtual = parseMoney(e.target.value); save(); updateTotals(); });
+  document.getElementById('name-a').addEventListener('change', e=>{ model.nameA = e.target.value.trim()||'Argeu'; save(); updatePayerLabels(); updateTotals(); });
+  document.getElementById('name-p').addEventListener('change', e=>{ model.nameP = e.target.value.trim()||'Mayara'; save(); updatePayerLabels(); updateTotals(); });
+
+  document.querySelectorAll('.chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      filter = chip.dataset.f;
+      document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on', c===chip));
+      render();
+    });
+  });
 }
-const item = li => model[+li.dataset.g].items[+li.dataset.i];
+const item = li => model.groups[+li.dataset.g].items[+li.dataset.i];
 
 function addItem(sec){
   const gi = +sec.dataset.gi;
   const name = sec.querySelector('.add-name').value.trim();
-  const price = parseMoney(sec.querySelector('.add-price').value);
+  const est = parseMoney(sec.querySelector('.add-price').value);
   if(!name){ sec.querySelector('.add-name').focus(); return; }
-  model[gi].items.push({ id:uid(), label:name, price, ess:false, have:false, checked:false });
+  model.groups[gi].items.push({ id:uid(), label:name, est, real:0, payer:'', ess:false, have:false, checked:false });
   save(); render();
   const s2 = document.querySelector(`.group[data-gi="${gi}"]`);
   if(s2){ s2.classList.remove('collapsed'); s2.querySelector('.add-form').classList.add('open'); s2.querySelector('.add-name').focus(); }
@@ -284,7 +549,7 @@ function addGroup(){
   const input = document.getElementById('group-name');
   const name = input.value.trim();
   if(!name){ input.focus(); return; }
-  model.push({ g:name, emoji:'📦', items:[] });
+  model.groups.push({ g:name, emoji:'📦', items:[] });
   input.value='';
   save(); render();
 }
@@ -293,8 +558,8 @@ function addGroup(){
 function exportHTML(){
   const doc = document.documentElement.outerHTML;
   const withData = doc.replace(
-    '<script>',
-    `<script>window.__INITIAL__=${JSON.stringify({groups: model})};`
+    '<script id="mainjs">',
+    `<script id="mainjs">window.__INITIAL__=${JSON.stringify(model)};`
   );
   const blob = new Blob(['<!DOCTYPE html>\n' + withData], {type:'text/html'});
   const url = URL.createObjectURL(blob);
@@ -303,10 +568,72 @@ function exportHTML(){
   a.remove(); setTimeout(()=>URL.revokeObjectURL(url), 1500);
 }
 
+/* ================= SINCRONIZAÇÃO (Firebase, opcional) ================= */
+function isFirebaseConfigured(){
+  return FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey.indexOf('COLOQUE_AQUI')===-1;
+}
+function loadScript(src){
+  return new Promise((resolve,reject)=>{
+    const s=document.createElement('script'); s.src=src; s.onload=resolve; s.onerror=reject; document.head.appendChild(s);
+  });
+}
+async function initSync(){
+  const badge = document.getElementById('sync-badge');
+  if(!isFirebaseConfigured()){
+    badge.className='sync-badge off';
+    badge.textContent='💾 Sincronização com a nuvem não configurada ainda';
+    return;
+  }
+  try{
+    await loadScript('https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js');
+    await loadScript('https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js');
+    await loadScript('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js');
+    firebase.initializeApp(FIREBASE_CONFIG);
+    auth = firebase.auth();
+    db = firebase.firestore();
+    auth.onAuthStateChanged(user=>{
+      if(user){ hideAuthGate(); attachRemoteSync(); badge.className='sync-badge'; badge.innerHTML='<b>●</b> Sincronizado com a nuvem — '+escapeHtml(user.email)+' <button id="sync-logout">Sair</button>';
+        const lo=document.getElementById('sync-logout'); if(lo) lo.addEventListener('click', ()=>auth.signOut());
+      }
+      else { remoteRef=null; showAuthGate(); badge.className='sync-badge off'; badge.textContent='💾 Sincronização com a nuvem não configurada ainda'; }
+    });
+  }catch(e){
+    badge.className='sync-badge off';
+    badge.textContent='⚠️ Não deu pra conectar à nuvem agora — salvando só neste aparelho.';
+  }
+}
+function attachRemoteSync(){
+  remoteRef = db.collection('households').doc(HOUSEHOLD_DOC);
+  remoteRef.onSnapshot(snap=>{
+    if(snap.exists && snap.data().model){
+      model = snap.data().model;
+      normalizeModel();
+      try{ localStorage.setItem(KEY, JSON.stringify(model)); }catch(e){}
+      render();
+    } else {
+      remoteRef.set({ model, updatedAt: Date.now() }).catch(()=>{});
+    }
+  });
+}
+function showAuthGate(){ document.getElementById('authgate').hidden=false; }
+function hideAuthGate(){ document.getElementById('authgate').hidden=true; }
+function wireAuth(){
+  document.getElementById('auth-login').addEventListener('click', ()=>{
+    const email=document.getElementById('auth-email').value.trim();
+    const pass=document.getElementById('auth-pass').value;
+    const err=document.getElementById('auth-error'); err.textContent='';
+    if(!auth){ return; }
+    auth.signInWithEmailAndPassword(email,pass).catch(e=>{ err.textContent='Não consegui entrar: confira e-mail e senha.'; });
+  });
+  document.getElementById('auth-skip').addEventListener('click', hideAuthGate);
+}
+
 /* ================= INIT ================= */
 loadModel();
 render();
 wire();
+wireAuth();
+initSync();
 </script>
 </body>
 </html>
