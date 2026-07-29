@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Argeu &amp; Mayara — Nossa Casa, Nossa Vida Nova</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EEF2F0; --card:#FFFFFF; --ink:#1B2A2F; --muted:#66787D;
+    --teal:#1F5B63; --teal-deep:#123338; --amber:#DE9145; --amber-soft:#F5E4D0;
+    --green:#5C9A76; --line:#E1E8E5; --shadow:0 1px 2px rgba(18,51,56,.05),0 8px 24px rgba(18,51,56,.06);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:'Inter',system-ui,sans-serif; background:var(--paper); color:var(--ink);
+    line-height:1.45; padding:18px 14px 70px; max-width:640px; margin:0 auto; -webkit-font-smoothing:antialiased}
+  .eyebrow{font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--teal); font-weight:600}
+  h1{font-family:'Fraunces',Georgia,serif; font-weight:900; font-size:clamp(28px,8vw,40px); line-height:1.02; letter-spacing:-.01em; margin:6px 0 4px}
+  h1 em{font-style:italic; color:var(--teal)}
+  .lede{color:var(--muted); font-size:14.5px; max-width:46ch}
+
+  .progress-card{background:linear-gradient(160deg,var(--teal),var(--teal-deep)); color:#fff;
+    border-radius:18px; padding:20px; margin:18px 0 10px; box-shadow:var(--shadow)}
+  .pct-row{display:flex; align-items:baseline; gap:10px; margin-bottom:12px}
+  .pct{font-family:'Fraunces',serif; font-weight:900; font-size:44px; line-height:1}
+  .pct small{font-size:19px; opacity:.8}
+  .pct-label{font-size:13px; opacity:.85; margin-left:auto; text-align:right; max-width:15ch}
+  .bar{height:12px; background:rgba(255,255,255,.18); border-radius:99px; overflow:hidden}
+  .bar > i{display:block; height:100%; width:0%; border-radius:99px; background:linear-gradient(90deg,var(--amber),#F0B778); transition:width .5s cubic-bezier(.2,.7,.2,1)}
+  .stats{display:flex; gap:10px; margin-top:14px}
+  .stat{flex:1; background:rgba(255,255,255,.1); border-radius:12px; padding:9px 12px}
+  .stat .k{font-size:11px; text-transform:uppercase; letter-spacing:.06em; opacity:.8}
+  .stat .v{font-family:'Fraunces',serif; font-weight:600; font-size:19px; margin-top:2px}
+  .count-line{font-size:12.5px; opacity:.85; margin-top:10px}
+
+  .group{background:var(--card); border:1px solid var(--line); border-radius:16px; margin-top:14px; overflow:hidden; box-shadow:var(--shadow)}
+  .group > header{display:flex; align-items:center; gap:11px; padding:13px 16px; cursor:pointer; user-select:none; background:linear-gradient(0deg,#fbfdfc,#fff)}
+  .group > header .emoji{font-size:18px}
+  .ghead{flex:1; min-width:0}
+  .ghead h2{font-family:'Fraunces',serif; font-weight:600; font-size:17px; line-height:1.1}
+  .ghead .gsub{font-size:12px; color:var(--muted); margin-top:2px}
+  .ghead .gsub b{color:var(--teal); font-weight:600}
+  .chev{transition:transform .25s; color:var(--muted); font-size:13px}
+  .group.collapsed .chev{transform:rotate(-90deg)}
+  .items{list-style:none}
+  .group.collapsed .items{display:none}
+
+  .item{display:flex; align-items:center; gap:11px; padding:11px 14px; border-top:1px solid var(--line); min-height:54px}
+  .box{flex:none; width:24px; height:24px; border-radius:8px; border:2px solid #C4D2CD; background:#fff; display:grid; place-items:center; cursor:pointer; transition:all .16s}
+  .box svg{width:14px; height:14px; stroke:#fff; stroke-width:3.2; fill:none; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:20; stroke-dashoffset:20; transition:stroke-dashoffset .22s}
+  .txt{flex:1; min-width:0; font-size:15px; font-weight:500; cursor:pointer}
+  .pill{font-size:10px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; color:var(--amber); background:var(--amber-soft); border-radius:6px; padding:2px 6px; margin-left:6px; white-space:nowrap}
+  .price{display:flex; align-items:center; gap:3px; flex:none; background:#F2F6F4; border:1px solid var(--line); border-radius:9px; padding:5px 8px}
+  .price .cur{font-size:12px; color:var(--muted); font-weight:600}
+  .price input{width:62px; border:none; background:none; font:inherit; font-size:14px; font-weight:600; text-align:right; color:var(--ink); outline:none}
+  .del{flex:none; width:26px; height:26px; border:none; background:none; color:#B7C6C1; font-size:20px; line-height:1; cursor:pointer; border-radius:7px}
+  .del:active{background:#F0F4F2; color:#E06B6B}
+  .item.done .box{background:var(--green); border-color:var(--green)}
+  .item.done .box svg{stroke-dashoffset:0}
+  .item.done .txt{color:var(--muted); text-decoration:line-through; text-decoration-color:#B7C6C1}
+
+  .additem{padding:10px 14px; border-top:1px dashed var(--line)}
+  .add-toggle{font:inherit; font-size:13.5px; font-weight:600; color:var(--teal); background:none; border:none; cursor:pointer; padding:4px 0}
+  .add-form{display:none; gap:8px; margin-top:8px; flex-wrap:wrap}
+  .add-form.open{display:flex}
+  .add-form input{font:inherit; font-size:14px; border:1px solid var(--line); border-radius:9px; padding:9px 11px; outline:none}
+  .add-form input:focus{border-color:var(--teal)}
+  .add-name{flex:1; min-width:130px}
+  .add-price{width:110px}
+  .add-save{font:inherit; font-size:13.5px; font-weight:600; color:#fff; background:var(--teal); border:none; border-radius:9px; padding:9px 15px; cursor:pointer}
+  .add-save:active{background:var(--teal-deep)}
+
+  .add-group{margin-top:14px}
+  .add-group-form{display:none; gap:8px; margin-top:8px; flex-wrap:wrap}
+  .add-group-form.open{display:flex}
+  .add-group-form input{font:inherit; font-size:14px; border:1px solid var(--line); border-radius:9px; padding:9px 11px; outline:none; flex:1; min-width:130px}
+  .add-group-form input:focus{border-color:var(--teal)}
+
+  .actions{display:flex; gap:10px; margin-top:18px}
+  .btn{flex:1; font:inherit; font-size:14px; font-weight:600; border-radius:12px; padding:13px; cursor:pointer; text-align:center; border:1px solid var(--line)}
+  .btn.primary{color:#fff; background:var(--teal); border-color:var(--teal)}
+  .btn.primary:active{background:var(--teal-deep)}
+  .btn.ghost{color:var(--muted); background:#fff}
+  .btn.ghost:active{background:#E9EFEC}
+  .save-note{font-size:12.5px; color:var(--muted); text-align:center; margin-top:14px}
+  .save-note b{color:var(--teal)}
+  footer.credits{text-align:center; font-size:12px; color:var(--muted); margin-top:26px}
+  :focus-visible{outline:3px solid var(--amber); outline-offset:2px; border-radius:6px}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="eyebrow">Argeu &amp; Mayara · recomeçando a vida juntos</div>
+<h1>Nossa casa, <em>item por item</em></h1>
+<p class="lede">Um passo de cada vez pra construir o nosso ninho e escrever essa história de amor. Marque o que já resolveram, ajuste os valores e adicione o que faltar — tudo salva sozinho aqui no navegador.</p>
+
+<div class="progress-card">
+  <div class="pct-row">
+    <div class="pct"><span id="pct">0</span><small>%</small></div>
+    <div class="pct-label" id="milestone">montando o ninho…</div>
+  </div>
+  <div class="bar"><i id="barfill"></i></div>
+  <div class="stats">
+    <div class="stat"><div class="k">Estimado total</div><div class="v" id="tot-est">R$ 0</div></div>
+    <div class="stat"><div class="k">Já comprado</div><div class="v" id="tot-buy">R$ 0</div></div>
+  </div>
+  <div class="count-line"><b id="done">0</b> de <b id="total">0</b> itens · faltam <b id="left">0</b></div>
+</div>
+
+<div id="app"></div>
+
+<div class="add-group">
+  <button class="add-toggle" id="group-open">+ Adicionar cômodo / categoria</button>
+  <div class="add-group-form" id="group-form">
+    <input id="group-name" placeholder="Nome do cômodo (ex.: Escritório)">
+    <button class="add-save" id="group-save">Adicionar</button>
+  </div>
+</div>
+
+<div class="actions">
+  <button class="btn primary" id="export">⬇︎ Baixar página pra enviar</button>
+  <button class="btn ghost" id="reset">Reiniciar</button>
+</div>
+<div class="save-note">✓ <b>Salva automático</b> aqui no seu navegador. Pra enviar pra alguém ou guardar backup, use "Baixar página".</div>
+<footer class="credits">Feito com carinho pra casa e vida nova de Argeu &amp; Mayara 💛</footer>
+
+<script>
+/* ================= CONTEÚDO ================= */
+const DEFAULT_GROUPS = [
+  { g:'Já temos', emoji:'✅', items:[
+    ['tv','TV',0,0,1],['sofa','Sofá',0,0,1],['utensilios','Utensílios diversos',0,0,1] ]},
+  { g:'Cozinha', emoji:'🍳', items:[
+    ['geladeira','Geladeira',3000,1,0],['fogao','Fogão / Cooktop',900,1,0],['mesa','Mesa + cadeiras',1200,1,0],
+    ['microondas','Microondas',600,0,0],['airfryer','Air fryer',500,0,0],['panelas','Panelas (jogo)',400,0,0],
+    ['louca','Talheres / pratos / copos',300,0,0],['facas','Tábua + facas',150,0,0],
+    ['filtro','Filtro / purificador de água',500,0,0],['liquidificador','Liquidificador',200,0,0],
+    ['potes','Potes / vasilhas',100,0,0],['lixeiracoz','Lixeira',80,0,0],
+    ['lavalouca','Máquina de lavar louça (bancada)',2000,0,0] ]},
+  { g:'Quarto', emoji:'🛏️', items:[
+    ['cama','Cama + colchão (casal)',2500,1,0],['guardaroupa','Guarda-roupa',1500,1,0],
+    ['roupacama','Roupa de cama (2–3 jogos)',400,0,0],['travesseiros','Travesseiros',150,0,0],
+    ['criado','Criado-mudo',400,0,0],['cortinaq','Cortina / blackout',200,0,0] ]},
+  { g:'Sala', emoji:'🛋️', items:[
+    ['rack','Rack / painel de TV',800,0,0],['mesacentro','Mesa de centro',300,0,0],
+    ['cortinas','Cortina',200,0,0],['luminaria','Luminária / abajur',150,0,0] ]},
+  { g:'Banheiro', emoji:'🚿', items:[
+    ['toalhas','Toalhas (banho / rosto)',250,0,0],['cestob','Cesto de roupa suja',80,0,0],
+    ['lixeiraban','Lixeira',50,0,0],['tapete','Tapete',60,0,0],['acessorios','Kit acessórios',100,0,0] ]},
+  { g:'Área de serviço', emoji:'🧺', items:[
+    ['lavaroupa','Máquina de lavar roupa',2500,1,0],['limpezakit','Baldes / vassoura / rodo / panos',150,1,0],
+    ['produtos','Produtos de limpeza (kit)',200,1,0],['varal','Varal',120,0,0],
+    ['ferro','Ferro + tábua de passar',200,0,0],['cestoa','Cesto de roupa',60,0,0] ]},
+];
+
+/* ================= ESTADO ================= */
+const KEY = 'argeu-mayara-checklist-v1';
+let model = [];
+
+function seed(){
+  return DEFAULT_GROUPS.map(gr => ({
+    g:gr.g, emoji:gr.emoji,
+    items:gr.items.map(it => ({ id:it[0], label:it[1], price:it[2], ess:!!it[3], have:!!it[4], checked:!!it[4] }))
+  }));
+}
+function loadModel(){
+  if(window.__INITIAL__ && window.__INITIAL__.groups){ model = window.__INITIAL__.groups; return; }
+  try{
+    const raw = localStorage.getItem(KEY);
+    model = raw ? JSON.parse(raw) : seed();
+  }catch(e){ model = seed(); }
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(model)); }catch(e){} }
+
+/* ================= HELPERS ================= */
+const money = n => 'R$ ' + Math.round(n||0).toLocaleString('pt-BR');
+const parseMoney = s => { const c=(s||'').toString().replace(/\./g,'').replace(',','.').replace(/[^\d.]/g,''); const n=parseFloat(c); return isNaN(n)?0:n; };
+const uid = () => 'x'+Math.random().toString(36).slice(2,8);
+const check = () => '<svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg>';
+function escapeHtml(s){ return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+const set = (id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
+
+/* ================= RENDER ================= */
+function render(){
+  const app = document.getElementById('app');
+  app.innerHTML = model.map((gr,gi)=>{
+    const done = gr.items.filter(i=>i.checked).length;
+    const sub = gr.items.reduce((s,i)=>s+(i.price||0),0);
+    const rows = gr.items.map((it,ii)=>`
+      <li class="item ${it.checked?'done':''}" data-g="${gi}" data-i="${ii}">
+        <span class="box" data-act="check">${check()}</span>
+        <span class="txt" data-act="check">${escapeHtml(it.label)}${it.ess?'<span class="pill">Essencial</span>':''}</span>
+        <span class="price"><span class="cur">R$</span><input inputmode="numeric" data-act="price" value="${it.price?it.price:''}" placeholder="0"></span>
+        <button class="del" data-act="del" aria-label="Remover">×</button>
+      </li>`).join('');
+    return `<section class="group" data-gi="${gi}">
+      <header data-toggle>
+        <span class="emoji">${gr.emoji}</span>
+        <span class="ghead"><h2>${escapeHtml(gr.g)}</h2>
+          <span class="gsub">Subtotal <b>${money(sub)}</b> · ${done}/${gr.items.length} itens</span></span>
+        <span class="chev">▼</span>
+      </header>
+      <ul class="items">${rows}
+        <li class="additem">
+          <button class="add-toggle" data-act="add-open">+ Adicionar item</button>
+          <div class="add-form">
+            <input class="add-name" placeholder="Nome do item" data-act="add-name">
+            <input class="add-price" inputmode="numeric" placeholder="R$ (opcional)" data-act="add-price">
+            <button class="add-save" data-act="add-save">Adicionar</button>
+          </div>
+        </li>
+      </ul>
+    </section>`;
+  }).join('');
+  updateTotals();
+}
+
+function updateTotals(){
+  const all = model.flatMap(g=>g.items);
+  const done = all.filter(i=>i.checked).length, total=all.length, left=total-done;
+  const pct = total? Math.round(done/total*100):0;
+  const est = all.reduce((s,i)=>s+(i.price||0),0);
+  const buy = all.filter(i=>i.checked).reduce((s,i)=>s+(i.price||0),0);
+  set('pct',pct); set('done',done); set('total',total); set('left',left);
+  set('tot-est',money(est)); set('tot-buy',money(buy));
+  const bf=document.getElementById('barfill'); if(bf) bf.style.width = pct+'%';
+  set('milestone', pct===100?'prontos pra morar juntos! 🎉': pct>=75?'quase lá — reta final':
+      pct>=50?'mais da metade da casa': pct>=25?'já tá tomando forma':'montando o ninho…');
+}
+
+/* ================= EVENTOS ================= */
+function wire(){
+  const app = document.getElementById('app');
+  app.addEventListener('click', e=>{
+    const toggle = e.target.closest('header[data-toggle]');
+    if(toggle){ toggle.parentElement.classList.toggle('collapsed'); return; }
+    const act = e.target.closest('[data-act]'); if(!act) return;
+    const type = act.dataset.act;
+    const li = e.target.closest('.item'); const sec = e.target.closest('.group');
+    if(type==='check' && li){ const it=item(li); it.checked=!it.checked; save(); render(); }
+    else if(type==='del' && li){ model[+li.dataset.g].items.splice(+li.dataset.i,1); save(); render(); }
+    else if(type==='add-open'){ act.nextElementSibling.classList.toggle('open'); const n=act.nextElementSibling.querySelector('.add-name'); if(n) n.focus(); }
+    else if(type==='add-save'){ addItem(sec); }
+  });
+  app.addEventListener('change', e=>{
+    const inp = e.target.closest('input[data-act="price"]'); if(!inp) return;
+    item(e.target.closest('.item')).price = parseMoney(inp.value); save(); render();
+  });
+  app.addEventListener('keydown', e=>{
+    if(e.key==='Enter' && e.target.closest('.add-form')){ e.preventDefault(); addItem(e.target.closest('.group')); }
+  });
+  document.getElementById('reset').addEventListener('click', ()=>{
+    if(confirm('Reiniciar a lista com os itens e valores padrão? Isso apaga o que vocês personalizaram.')){
+      model = seed(); save(); render();
+    }
+  });
+  document.getElementById('export').addEventListener('click', exportHTML);
+
+  document.getElementById('group-open').addEventListener('click', ()=>{
+    document.getElementById('group-form').classList.toggle('open');
+    document.getElementById('group-name').focus();
+  });
+  document.getElementById('group-save').addEventListener('click', addGroup);
+  document.getElementById('group-name').addEventListener('keydown', e=>{
+    if(e.key==='Enter'){ e.preventDefault(); addGroup(); }
+  });
+}
+const item = li => model[+li.dataset.g].items[+li.dataset.i];
+
+function addItem(sec){
+  const gi = +sec.dataset.gi;
+  const name = sec.querySelector('.add-name').value.trim();
+  const price = parseMoney(sec.querySelector('.add-price').value);
+  if(!name){ sec.querySelector('.add-name').focus(); return; }
+  model[gi].items.push({ id:uid(), label:name, price, ess:false, have:false, checked:false });
+  save(); render();
+  const s2 = document.querySelector(`.group[data-gi="${gi}"]`);
+  if(s2){ s2.classList.remove('collapsed'); s2.querySelector('.add-form').classList.add('open'); s2.querySelector('.add-name').focus(); }
+}
+
+function addGroup(){
+  const input = document.getElementById('group-name');
+  const name = input.value.trim();
+  if(!name){ input.focus(); return; }
+  model.push({ g:name, emoji:'📦', items:[] });
+  input.value='';
+  save(); render();
+}
+
+/* ================= EXPORTAR PÁGINA ================= */
+function exportHTML(){
+  const doc = document.documentElement.outerHTML;
+  const withData = doc.replace(
+    '<script>',
+    `<script>window.__INITIAL__=${JSON.stringify({groups: model})};`
+  );
+  const blob = new Blob(['<!DOCTYPE html>\n' + withData], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download='argeu-e-mayara-nossa-casa.html'; document.body.appendChild(a); a.click();
+  a.remove(); setTimeout(()=>URL.revokeObjectURL(url), 1500);
+}
+
+/* ================= INIT ================= */
+loadModel();
+render();
+wire();
+</script>
+</body>
+</html>
