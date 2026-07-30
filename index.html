@@ -128,6 +128,10 @@
 
   .item{padding:12px 14px; border-top:1px solid var(--line)}
   .item-top{display:flex; align-items:center; gap:11px}
+  .drag-handle{flex:none; width:20px; text-align:center; color:#C9BCA9; font-size:17px; cursor:grab; touch-action:none; user-select:none}
+  .drag-handle:active{cursor:grabbing; color:var(--clay)}
+  .item.sortable-ghost{opacity:.35}
+  .item.sortable-drag{background:#fff; box-shadow:var(--shadow); border-radius:10px}
   .box{flex:none; width:24px; height:24px; border-radius:8px; border:2px solid #D8CDBC; background:#fff; display:grid; place-items:center; cursor:pointer; transition:all .16s}
   .box svg{width:14px; height:14px; stroke:#fff; stroke-width:3.2; fill:none; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:20; stroke-dashoffset:20; transition:stroke-dashoffset .22s}
   .txt{flex:1; min-width:0; font-size:15px; font-weight:500; cursor:pointer}
@@ -157,6 +161,8 @@
   .add-form input:focus{border-color:var(--clay)}
   .add-name{flex:1; min-width:130px}
   .add-price{width:120px}
+  .add-ess{display:flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color:var(--muted); cursor:pointer; white-space:nowrap}
+  .add-ess input{width:auto; padding:0}
   .add-save{font:inherit; font-size:13.5px; font-weight:600; color:#fff; background:var(--clay); border:none; border-radius:9px; padding:9px 15px; cursor:pointer}
   .add-save:active{background:var(--clay-deep)}
 
@@ -305,6 +311,7 @@
   <button class="chip on" data-f="all">Tudo</button>
   <button class="chip" data-f="left">Só o que falta</button>
   <button class="chip" data-f="ess">Só essenciais</button>
+  <button class="chip" data-f="bought">Comprados</button>
 </div>
 
 <div id="app"></div>
@@ -455,7 +462,7 @@ const uid = () => 'x'+Math.random().toString(36).slice(2,8);
 const svgCheck = () => '<svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg>';
 function escapeHtml(s){ return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 const set = (id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
-const matches = it => filter==='all' ? true : filter==='left' ? !it.checked : it.ess;
+const matches = it => filter==='all' ? true : filter==='left' ? !it.checked : filter==='bought' ? it.checked : it.ess;
 function updateGroupSubtotal(gi){
   const gr = model.groups[gi]; if(!gr) return;
   const done = gr.items.filter(i=>i.checked).length;
@@ -479,6 +486,7 @@ function render(){
     const rows = rowsData.map(({it,ii})=>`
       <li class="item ${it.checked?'done':''}" data-g="${gi}" data-i="${ii}">
         <div class="item-top">
+          ${filter==='all' ? '<span class="drag-handle" title="Arrastar pra reordenar">⠿</span>' : ''}
           <span class="box" data-act="check">${svgCheck()}</span>
           <span class="txt" data-act="check">${escapeHtml(it.label)}${it.ess?'<span class="pill">Essencial</span>':''}</span>
           <button class="del" data-act="del" aria-label="Remover">×</button>
@@ -501,6 +509,7 @@ function render(){
           <div class="add-form">
             <input class="add-name" placeholder="Nome do item" data-act="add-name">
             <input class="add-price" inputmode="numeric" placeholder="R$ estimado" data-act="add-price">
+            <label class="add-ess"><input type="checkbox" class="add-ess-check"> Essencial</label>
             <button class="add-save" data-act="add-save">Adicionar</button>
           </div>
         </li>` : '';
@@ -523,6 +532,32 @@ function render(){
   renderDeposits();
   renderAgreement();
   updateTotals();
+  initSortable();
+}
+
+/* ================= ARRASTAR PRA REORDENAR (SortableJS) ================= */
+let sortableInstances = [];
+function initSortable(){
+  sortableInstances.forEach(s=>s.destroy());
+  sortableInstances = [];
+  if(filter!=='all' || typeof Sortable==='undefined') return;
+  document.querySelectorAll('.group .items').forEach(ul=>{
+    const gi = +ul.closest('.group').dataset.gi;
+    sortableInstances.push(Sortable.create(ul, {
+      handle: '.drag-handle',
+      draggable: '.item',
+      animation: 150,
+      ghostClass: 'sortable-ghost',
+      dragClass: 'sortable-drag',
+      onEnd: evt => {
+        if(evt.oldIndex===evt.newIndex) return;
+        const arr = model.groups[gi].items;
+        const [moved] = arr.splice(evt.oldIndex, 1);
+        arr.splice(evt.newIndex, 0, moved);
+        save();
+      }
+    }));
+  });
 }
 
 function renderAgreement(){
@@ -741,8 +776,9 @@ function addItem(sec){
   const gi = +sec.dataset.gi;
   const name = sec.querySelector('.add-name').value.trim();
   const est = parseMoney(sec.querySelector('.add-price').value);
+  const ess = sec.querySelector('.add-ess-check').checked;
   if(!name){ sec.querySelector('.add-name').focus(); return; }
-  model.groups[gi].items.push({ id:uid(), label:name, est, real:0, payer:'', link:'', ess:false, have:false, checked:false });
+  model.groups[gi].items.push({ id:uid(), label:name, est, real:0, payer:'', link:'', ess, have:false, checked:false });
   save(); render();
   const s2 = document.querySelector(`.group[data-gi="${gi}"]`);
   if(s2){ s2.classList.remove('collapsed'); s2.querySelector('.add-form').classList.add('open'); s2.querySelector('.add-name').focus(); }
@@ -931,6 +967,7 @@ render();
 wire();
 wireAuth();
 initSync();
+loadScript('https://cdn.jsdelivr.net/npm/sortablejs@1.15.7/Sortable.min.js').then(initSortable).catch(()=>{});
 </script>
 </body>
 </html>
