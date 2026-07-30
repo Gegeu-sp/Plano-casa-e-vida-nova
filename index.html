@@ -11,12 +11,38 @@
   /* Paleta inspirada na tendência 2026 (Pantone Cloud Dancer + "quiet luxury"):
      branco aveludado, terracota/argila e verde-sálvia sobre neutros quentes. */
   :root{
+    color-scheme: light;
     --paper:#F6F1EA; --card:#FFFFFF; --ink:#2A241F; --muted:#8D8172;
-    --clay:#B5673F; --clay-deep:#8A4B2C; --clay-soft:#F1DED0;
-    --sage:#7C8768; --sage-soft:#E7EBDD;
+    --clay:#B5673F; --clay-deep:#8A4B2C; --clay-soft:#F1DED0; --clay-soft-text:#8A4B2C;
+    --sage:#7C8768; --sage-soft:#E7EBDD; --sage-soft-text:#4B5640;
     --gold:#C79A46; --gold-soft:#F1E6C8;
-    --line:#E9E1D3; --shadow:0 1px 2px rgba(42,36,31,.06),0 10px 28px rgba(42,36,31,.08);
+    --line:#E9E1D3; --border-soft:#D8CDBC; --icon-muted:#C9BCA9;
+    --surface-2:#F7F2EA; --surface-hover:#F1EBE0; --error:#B2543A;
+    --shadow:0 1px 2px rgba(42,36,31,.06),0 10px 28px rgba(42,36,31,.08);
   }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --paper:#18140F; --card:#241E17; --ink:#F2EAE0; --muted:#B3A491;
+      --clay:#D9895A; --clay-deep:#8A4B2C; --clay-soft:#3D2A1E; --clay-soft-text:#F0C8A8;
+      --sage:#94A67E; --sage-soft:#28301F; --sage-soft-text:#B9CBA0;
+      --gold:#E0B563; --gold-soft:#3A3020;
+      --line:#3A3226; --border-soft:#4A4030; --icon-muted:#6B6152;
+      --surface-2:#211B15; --surface-hover:#332A20; --error:#E08767;
+      --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 28px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --paper:#18140F; --card:#241E17; --ink:#F2EAE0; --muted:#B3A491;
+    --clay:#D9895A; --clay-deep:#8A4B2C; --clay-soft:#3D2A1E; --clay-soft-text:#F0C8A8;
+    --sage:#94A67E; --sage-soft:#28301F; --sage-soft-text:#B9CBA0;
+    --gold:#E0B563; --gold-soft:#3A3020;
+    --line:#3A3226; --border-soft:#4A4030; --icon-muted:#6B6152;
+    --surface-2:#211B15; --surface-hover:#332A20; --error:#E08767;
+    --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 28px rgba(0,0,0,.5);
+  }
+  body{transition:background-color .2s, color .2s}
   *{box-sizing:border-box;margin:0;padding:0}
   html{-webkit-text-size-adjust:100%}
   body{font-family:'Inter',system-ui,sans-serif; background:var(--paper); color:var(--ink);
@@ -29,6 +55,8 @@
 
   /* ---- Capa ---- */
   .hero{position:relative; height:clamp(220px,42vw,320px); overflow:hidden}
+  .theme-toggle{position:absolute; top:14px; right:14px; z-index:5; width:38px; height:38px; border-radius:50%; border:none; background:rgba(20,16,12,.4); color:#fff; font-size:17px; cursor:pointer; display:grid; place-items:center; backdrop-filter:blur(4px)}
+  .theme-toggle:active{background:rgba(20,16,12,.6)}
   .hero img{width:100%; height:100%; object-fit:cover; object-position:50% 30%; display:block}
   .hero::after{content:'';position:absolute; inset:0;
     background:linear-gradient(180deg, rgba(42,36,31,.05) 0%, rgba(42,36,31,.35) 55%, rgba(42,36,31,.78) 100%)}
@@ -66,18 +94,18 @@
   .names{display:flex; gap:8px; margin-bottom:6px}
   .names label{flex:1; min-width:0}
   .names .cap{font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); font-weight:600; display:block; margin-bottom:3px}
-  .names input,.capfields input{width:100%; font:inherit; font-size:14px; border:1px solid var(--line); border-radius:9px; padding:9px 11px; outline:none; background:#fff}
+  .names input,.capfields input{width:100%; font:inherit; font-size:14px; border:1px solid var(--line); border-radius:9px; padding:9px 11px; outline:none; background:var(--card)}
   .names input:focus,.capfields input:focus{border-color:var(--clay)}
   .divrow{display:flex; justify-content:space-between; font-size:14px; padding:8px 0; border-top:1px solid var(--line)}
   .divrow .v{font-weight:600}
-  .acerto{margin-top:10px; background:var(--sage-soft); border-radius:10px; padding:11px 13px; font-weight:600; color:#4B5640; font-size:14px}
+  .acerto{margin-top:10px; background:var(--sage-soft); border-radius:10px; padding:11px 13px; font-weight:600; color:var(--sage-soft-text); font-size:14px}
 
   .capfields{display:flex; gap:8px; margin-bottom:10px}
   .capfields label{flex:1; min-width:0}
   .capfields .cap{font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); font-weight:600; display:block; margin-bottom:3px}
   .capsum{margin-top:4px; border-radius:10px; padding:12px 13px; font-weight:600; font-size:14px}
-  .capsum.deficit{background:var(--clay-soft); color:var(--clay-deep)}
-  .capsum.superavit{background:var(--sage-soft); color:#4B5640}
+  .capsum.deficit{background:var(--clay-soft); color:var(--clay-soft-text)}
+  .capsum.superavit{background:var(--sage-soft); color:var(--sage-soft-text)}
   .capsum small{display:block; font-weight:500; font-size:12px; margin-top:3px; opacity:.85}
 
   .deposits{list-style:none}
@@ -88,19 +116,19 @@
   .dep-item .dep-amount{font-weight:600}
   .deposit-add{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 4px}
   .deposit-add .fld{flex:none}
-  .dep-btn{font:inherit; font-size:12.5px; font-weight:600; border:1px solid var(--line); background:#fff; color:var(--clay); border-radius:9px; padding:8px 12px; cursor:pointer}
+  .dep-btn{font:inherit; font-size:12.5px; font-weight:600; border:1px solid var(--line); background:var(--card); color:var(--clay); border-radius:9px; padding:8px 12px; cursor:pointer}
   .dep-btn:active{background:var(--clay-soft)}
 
-  .agree-warn{background:var(--clay-soft); color:var(--clay-deep); border-radius:10px; padding:12px 13px; font-size:12.5px; line-height:1.5; margin-bottom:12px}
+  .agree-warn{background:var(--clay-soft); color:var(--clay-soft-text); border-radius:10px; padding:12px 13px; font-size:12.5px; line-height:1.5; margin-bottom:12px}
   .agree-warn b{font-weight:700}
   .agree-field{margin-bottom:12px}
   .agree-field .cap{font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); font-weight:600; display:block; margin-bottom:3px}
-  .agree-field input{width:100%; font:inherit; font-size:14px; border:1px solid var(--line); border-radius:9px; padding:9px 11px; outline:none; background:#fff}
+  .agree-field input{width:100%; font:inherit; font-size:14px; border:1px solid var(--line); border-radius:9px; padding:9px 11px; outline:none; background:var(--card)}
   .agree-field input:focus{border-color:var(--clay)}
   .agree-row{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 0; border-top:1px solid var(--line); font-size:13.5px}
   .agree-row .who{font-weight:600}
   .agree-sign{font:inherit; font-size:12.5px; font-weight:600; color:#fff; background:var(--clay); border:none; border-radius:9px; padding:8px 13px; cursor:pointer}
-  .agree-sign:disabled{background:#D8CDBC; cursor:not-allowed}
+  .agree-sign:disabled{background:var(--border-soft); cursor:not-allowed}
   .agree-signed{color:var(--sage); font-weight:600; font-size:12.5px; text-align:right}
   .agree-pending{color:var(--muted); font-size:12px}
   .agree-pdf{margin-top:14px; display:flex; flex-direction:column; gap:6px}
@@ -111,11 +139,11 @@
   .agree-party .agree-field{margin-bottom:8px}
 
   .filters{display:flex; gap:8px; margin-top:16px; flex-wrap:wrap}
-  .chip{font:inherit; font-size:13px; font-weight:600; border:1px solid var(--line); background:#fff; color:var(--muted); border-radius:99px; padding:8px 15px; cursor:pointer}
-  .chip.on{background:var(--ink); color:#fff; border-color:var(--ink)}
+  .chip{font:inherit; font-size:13px; font-weight:600; border:1px solid var(--line); background:var(--card); color:var(--muted); border-radius:99px; padding:8px 15px; cursor:pointer}
+  .chip.on{background:var(--clay); color:#fff; border-color:var(--clay)}
 
   .group{background:var(--card); border:1px solid var(--line); border-radius:16px; margin-top:14px; overflow:hidden; box-shadow:var(--shadow)}
-  .group > header{display:flex; align-items:center; gap:11px; padding:13px 16px; cursor:pointer; user-select:none; background:linear-gradient(0deg,#fbf8f4,#fff)}
+  .group > header{display:flex; align-items:center; gap:11px; padding:13px 16px; cursor:pointer; user-select:none; background:linear-gradient(0deg,var(--paper),var(--card))}
   .group > header .emoji{font-size:18px}
   .ghead{flex:1; min-width:0}
   .ghead h2{font-family:'Fraunces',serif; font-weight:600; font-size:17px; line-height:1.1}
@@ -128,30 +156,31 @@
 
   .item{padding:12px 14px; border-top:1px solid var(--line)}
   .item-top{display:flex; align-items:center; gap:11px}
-  .drag-handle{flex:none; width:20px; text-align:center; color:#C9BCA9; font-size:17px; cursor:grab; touch-action:none; user-select:none}
+  .drag-handle{flex:none; width:20px; text-align:center; color:var(--icon-muted); font-size:17px; cursor:grab; touch-action:none; user-select:none}
   .drag-handle:active{cursor:grabbing; color:var(--clay)}
   .item.sortable-ghost{opacity:.35}
-  .item.sortable-drag{background:#fff; box-shadow:var(--shadow); border-radius:10px}
-  .box{flex:none; width:24px; height:24px; border-radius:8px; border:2px solid #D8CDBC; background:#fff; display:grid; place-items:center; cursor:pointer; transition:all .16s}
+  .item.sortable-drag{background:var(--card); box-shadow:var(--shadow); border-radius:10px}
+  .box{flex:none; width:24px; height:24px; border-radius:8px; border:2px solid var(--border-soft); background:var(--card); display:grid; place-items:center; cursor:pointer; transition:all .16s}
   .box svg{width:14px; height:14px; stroke:#fff; stroke-width:3.2; fill:none; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:20; stroke-dashoffset:20; transition:stroke-dashoffset .22s}
   .txt{flex:1; min-width:0; font-size:15px; font-weight:500; cursor:pointer}
-  .pill{font-size:10px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; color:var(--gold); background:var(--gold-soft); border-radius:6px; padding:2px 6px; margin-left:6px; white-space:nowrap}
-  .del{flex:none; width:26px; height:26px; border:none; background:none; color:#C9BCA9; font-size:20px; line-height:1; cursor:pointer; border-radius:7px}
-  .del:active{background:#F2ECE2; color:#B2543A}
+  .ess-toggle{font:inherit; font-size:11px; font-weight:700; letter-spacing:.02em; border:1px solid var(--line); border-radius:8px; padding:5px 9px; cursor:pointer; background:var(--card); color:var(--muted)}
+  .ess-toggle.on{background:var(--gold-soft); border-color:var(--gold); color:var(--gold)}
+  .del{flex:none; width:26px; height:26px; border:none; background:none; color:var(--icon-muted); font-size:20px; line-height:1; cursor:pointer; border-radius:7px}
+  .del:active{background:var(--surface-hover); color:var(--error)}
   .item-bottom{display:flex; align-items:center; gap:8px; margin:10px 0 0 35px; flex-wrap:wrap}
   .item-link{margin:8px 0 0 35px; font-size:12.5px}
   .link-pill{font-weight:600; color:var(--clay); text-decoration:none; border-bottom:1px dashed var(--clay)}
   .link-btn{font:inherit; font-size:11.5px; font-weight:600; color:var(--muted); background:none; border:none; cursor:pointer; text-decoration:underline; margin-left:8px; padding:0}
-  .fld{display:flex; align-items:center; gap:4px; background:#F7F2EA; border:1px solid var(--line); border-radius:9px; padding:4px 8px}
+  .fld{display:flex; align-items:center; gap:4px; background:var(--surface-2); border:1px solid var(--line); border-radius:9px; padding:4px 8px}
   .fld .lbl{font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); font-weight:700}
   .fld .cur{font-size:12px; color:var(--muted); font-weight:600}
   .fld input{width:56px; border:none; background:none; font:inherit; font-size:14px; font-weight:600; text-align:right; color:var(--ink); outline:none}
   .payer{display:flex; gap:5px; margin-left:auto}
-  .payer button{font:inherit; font-size:12px; font-weight:600; border:1px solid var(--line); background:#fff; color:var(--muted); border-radius:8px; padding:6px 10px; cursor:pointer; max-width:96px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .payer button{font:inherit; font-size:12px; font-weight:600; border:1px solid var(--line); background:var(--card); color:var(--muted); border-radius:8px; padding:6px 10px; cursor:pointer; max-width:96px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
   .payer button.on{background:var(--clay); color:#fff; border-color:var(--clay)}
   .item.done .box{background:var(--sage); border-color:var(--sage)}
   .item.done .box svg{stroke-dashoffset:0}
-  .item.done .txt{color:var(--muted); text-decoration:line-through; text-decoration-color:#D8CDBC}
+  .item.done .txt{color:var(--muted); text-decoration:line-through; text-decoration-color:var(--border-soft)}
 
   .additem{padding:10px 14px; border-top:1px dashed var(--line)}
   .add-toggle{font:inherit; font-size:13.5px; font-weight:600; color:var(--clay); background:none; border:none; cursor:pointer; padding:4px 0}
@@ -184,9 +213,9 @@
   .chart-svg{width:100%; height:auto; display:block; font-family:'Inter',system-ui,sans-serif}
   .chart-svg text{fill:var(--muted)}
   .chart-svg .cx-grid{stroke:var(--line); stroke-width:1}
-  .chart-svg .cx-axis{stroke:#C3C2B7; stroke-width:1}
+  .chart-svg .cx-axis{stroke:var(--border-soft); stroke-width:1}
   .chart-svg .cx-line{fill:none; stroke:var(--ink); stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
-  .chart-svg .cx-dot{stroke:#fff; stroke-width:2}
+  .chart-svg .cx-dot{stroke:var(--card); stroke-width:2}
   .chart-svg .cx-bar{}
   .chart-svg .cx-label{font-size:11px; font-weight:600; fill:var(--ink)}
   .chart-legend{display:flex; gap:16px; flex-wrap:wrap; margin-top:10px; font-size:12px; color:var(--muted)}
@@ -196,8 +225,8 @@
   .btn{flex:1; font:inherit; font-size:14px; font-weight:600; border-radius:12px; padding:13px; cursor:pointer; text-align:center; border:1px solid var(--line)}
   .btn.primary{color:#fff; background:var(--clay); border-color:var(--clay)}
   .btn.primary:active{background:var(--clay-deep)}
-  .btn.ghost{color:var(--muted); background:#fff}
-  .btn.ghost:active{background:#F1EBE0}
+  .btn.ghost{color:var(--muted); background:var(--card)}
+  .btn.ghost:active{background:var(--surface-hover)}
   .save-note{font-size:12.5px; color:var(--muted); text-align:center; margin-top:14px}
   .save-note b{color:var(--clay)}
   .sync-badge{display:flex; align-items:center; justify-content:center; gap:6px; font-size:12px; color:var(--muted); margin-top:10px}
@@ -211,13 +240,13 @@
   /* ---- Portão de login (só aparece se a nuvem estiver configurada) ---- */
   .authgate{position:fixed; inset:0; background:rgba(42,36,31,.72); display:flex; align-items:center; justify-content:center; padding:20px; z-index:50}
   .authgate[hidden]{display:none}
-  .authbox{background:#fff; border-radius:18px; padding:24px; max-width:360px; width:100%; box-shadow:var(--shadow)}
+  .authbox{background:var(--card); border-radius:18px; padding:24px; max-width:360px; width:100%; box-shadow:var(--shadow)}
   .authbox h2{font-family:'Fraunces',serif; font-size:22px; margin-bottom:6px}
   .authbox p{font-size:13.5px; color:var(--muted); margin-bottom:16px}
   .authbox input{width:100%; font:inherit; font-size:14px; border:1px solid var(--line); border-radius:9px; padding:11px 12px; outline:none; margin-bottom:10px}
   .authbox input:focus{border-color:var(--clay)}
   .authbox .btn{width:100%}
-  .auth-error{color:#B2543A; font-size:12.5px; margin-top:8px; min-height:16px}
+  .auth-error{color:var(--error); font-size:12.5px; margin-top:8px; min-height:16px}
   .auth-skip{display:block; text-align:center; width:100%; margin-top:12px; font:inherit; font-size:12.5px; color:var(--muted); background:none; border:none; cursor:pointer; text-decoration:underline}
 </style>
 </head>
@@ -225,6 +254,7 @@
 
 <div class="hero">
   <img src="assets/capa-argeu-mayara.jpg" alt="Argeu e Mayara">
+  <button class="theme-toggle" id="theme-toggle" aria-label="Alternar modo claro/escuro" title="Alternar modo claro/escuro">🌙</button>
   <div class="hero-text">
     <div class="eyebrow">Argeu &amp; Mayara · recomeçando a vida juntos</div>
     <h1>Nossa casa, <em>item por item</em></h1>
@@ -533,12 +563,13 @@ function render(){
         <div class="item-top">
           ${filter==='all' ? '<span class="drag-handle" title="Arrastar pra reordenar">⠿</span>' : ''}
           <span class="box" data-act="check">${svgCheck()}</span>
-          <span class="txt" data-act="check">${escapeHtml(it.label)}${it.ess?'<span class="pill">Essencial</span>':''}</span>
+          <span class="txt" data-act="check">${escapeHtml(it.label)}</span>
           <button class="del" data-act="del" aria-label="Remover">×</button>
         </div>
         <div class="item-bottom">
           <span class="fld"><span class="lbl">Est</span><span class="cur">R$</span><input inputmode="numeric" data-act="est" value="${it.est?it.est:''}" placeholder="0"></span>
           <span class="fld"><span class="lbl">Real</span><span class="cur">R$</span><input inputmode="numeric" data-act="real" value="${it.real?it.real:''}" placeholder="0"></span>
+          <button class="ess-toggle ${it.ess?'on':''}" data-act="toggle-ess">${it.ess?'★ Essencial':'☆ Essencial'}</button>
           <span class="payer">
             <button data-act="payer" data-p="A" class="${it.payer==='A'?'on':''}">${escapeHtml(model.nameA)}</button>
             <button data-act="payer" data-p="P" class="${it.payer==='P'?'on':''}">${escapeHtml(model.nameP)}</button>
@@ -801,6 +832,7 @@ function wire(){
     if(type==='check' && li){ const it=item(li); it.checked=!it.checked; save(); render(); }
     else if(type==='del' && li){ model.groups[+li.dataset.g].items.splice(+li.dataset.i,1); save(); render(); }
     else if(type==='payer' && li){ const it=item(li); const p=act.dataset.p; it.payer = it.payer===p ? '' : p; save(); render(); }
+    else if(type==='toggle-ess' && li){ const it=item(li); it.ess=!it.ess; save(); render(); }
     else if(type==='link-add' || type==='link-edit'){
       const it = item(li);
       const url = prompt('Cole o link do produto:', it.link||'');
@@ -1089,10 +1121,42 @@ function wireAuth(){
   document.getElementById('auth-skip').addEventListener('click', hideAuthGate);
 }
 
+/* ================= TEMA (claro/escuro) ================= */
+const THEME_KEY = 'argeu-mayara-theme';
+function currentEffectiveTheme(){
+  const explicit = document.documentElement.dataset.theme;
+  if(explicit) return explicit;
+  return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+}
+function updateThemeToggleIcon(){
+  const btn = document.getElementById('theme-toggle');
+  if(!btn) return;
+  btn.textContent = currentEffectiveTheme()==='dark' ? '☀️' : '🌙';
+}
+function applyTheme(t){
+  if(t==='dark' || t==='light') document.documentElement.dataset.theme = t;
+  else delete document.documentElement.dataset.theme;
+  updateThemeToggleIcon();
+}
+function initTheme(){
+  let saved = null;
+  try{ saved = localStorage.getItem(THEME_KEY); }catch(e){}
+  applyTheme(saved);
+}
+function wireTheme(){
+  document.getElementById('theme-toggle').addEventListener('click', ()=>{
+    const next = currentEffectiveTheme()==='dark' ? 'light' : 'dark';
+    applyTheme(next);
+    try{ localStorage.setItem(THEME_KEY, next); }catch(e){}
+  });
+}
+
 /* ================= INIT ================= */
+initTheme();
 loadModel();
 render();
 wire();
+wireTheme();
 wireAuth();
 initSync();
 loadScript('https://cdn.jsdelivr.net/npm/sortablejs@1.15.7/Sortable.min.js').then(initSortable).catch(()=>{});
