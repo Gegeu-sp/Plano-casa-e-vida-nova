@@ -80,6 +80,17 @@
   .capsum.superavit{background:var(--sage-soft); color:#4B5640}
   .capsum small{display:block; font-weight:500; font-size:12px; margin-top:3px; opacity:.85}
 
+  .deposits{list-style:none}
+  .dep-empty{font-size:12.5px; color:var(--muted); padding:6px 0}
+  .dep-item{display:flex; align-items:center; gap:8px; padding:8px 0; border-top:1px solid var(--line); font-size:13.5px}
+  .dep-item .dep-who{font-weight:700; color:var(--clay); min-width:64px}
+  .dep-item .dep-when{color:var(--muted); font-size:11.5px; flex:1}
+  .dep-item .dep-amount{font-weight:600}
+  .deposit-add{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 4px}
+  .deposit-add .fld{flex:none}
+  .dep-btn{font:inherit; font-size:12.5px; font-weight:600; border:1px solid var(--line); background:#fff; color:var(--clay); border-radius:9px; padding:8px 12px; cursor:pointer}
+  .dep-btn:active{background:var(--clay-soft)}
+
   .filters{display:flex; gap:8px; margin-top:16px; flex-wrap:wrap}
   .chip{font:inherit; font-size:13px; font-weight:600; border:1px solid var(--line); background:#fff; color:var(--muted); border-radius:99px; padding:8px 15px; cursor:pointer}
   .chip.on{background:var(--ink); color:#fff; border-color:var(--ink)}
@@ -105,6 +116,9 @@
   .del{flex:none; width:26px; height:26px; border:none; background:none; color:#C9BCA9; font-size:20px; line-height:1; cursor:pointer; border-radius:7px}
   .del:active{background:#F2ECE2; color:#B2543A}
   .item-bottom{display:flex; align-items:center; gap:8px; margin:10px 0 0 35px; flex-wrap:wrap}
+  .item-link{margin:8px 0 0 35px; font-size:12.5px}
+  .link-pill{font-weight:600; color:var(--clay); text-decoration:none; border-bottom:1px dashed var(--clay)}
+  .link-btn{font:inherit; font-size:11.5px; font-weight:600; color:var(--muted); background:none; border:none; cursor:pointer; text-decoration:underline; margin-left:8px; padding:0}
   .fld{display:flex; align-items:center; gap:4px; background:#F7F2EA; border:1px solid var(--line); border-radius:9px; padding:4px 8px}
   .fld .lbl{font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); font-weight:700}
   .fld .cur{font-size:12px; color:var(--muted); font-weight:600}
@@ -195,11 +209,23 @@
 
 <div class="capcard">
   <h3>Nosso capital</h3>
-  <p class="hint">Quanto vocês já guardaram e quanto guardam por mês — pra saber se dá pra cobrir tudo ou se falta.</p>
+  <p class="hint">Registre cada depósito (quanto e quem guardou) — o site soma tudo sozinho e calcula se dá pra cobrir o que falta.</p>
   <div class="capfields">
     <label><span class="cap">Guardam por mês</span><input id="cap-monthly" inputmode="numeric" placeholder="R$ 0"></label>
-    <label><span class="cap">Capital atual</span><input id="cap-atual" inputmode="numeric" placeholder="R$ 0"></label>
   </div>
+
+  <ul class="deposits" id="deposit-list"></ul>
+
+  <div class="deposit-add">
+    <span class="fld"><span class="cur">R$</span><input id="dep-amount" inputmode="numeric" placeholder="0"></span>
+    <button class="dep-btn" id="dep-add-a" data-who="A">+ Argeu guardou</button>
+    <button class="dep-btn" id="dep-add-p" data-who="P">+ Mayara guardou</button>
+  </div>
+
+  <div class="divrow"><span id="dep-lab-a">Argeu guardou</span><span class="v" id="dep-a">R$ 0</span></div>
+  <div class="divrow"><span id="dep-lab-p">Mayara guardou</span><span class="v" id="dep-p">R$ 0</span></div>
+  <div class="divrow"><span>Total guardado</span><span class="v" id="dep-total">R$ 0</span></div>
+
   <div class="capsum" id="cap-summary">Preencha os campos acima pra ver o cálculo.</div>
 </div>
 
@@ -310,10 +336,10 @@ let auth = null, db = null, remoteRef = null, suppressNextWrite = false;
 
 function seed(){
   return {
-    budget: 0, capMonthly: 0, capAtual: 0, nameA: 'Argeu', nameP: 'Mayara',
+    budget: 0, capMonthly: 0, deposits: [], nameA: 'Argeu', nameP: 'Mayara',
     groups: DEFAULT_GROUPS.map(gr => ({
       g:gr.g, emoji:gr.emoji,
-      items:gr.items.map(it => ({ id:it[0], label:it[1], est:it[2], real:0, payer:'', ess:!!it[3], have:!!it[4], checked:!!it[4] }))
+      items:gr.items.map(it => ({ id:it[0], label:it[1], est:it[2], real:0, payer:'', link:'', ess:!!it[3], have:!!it[4], checked:!!it[4] }))
     }))
   };
 }
@@ -324,7 +350,7 @@ function migrateOld(){
     const old = JSON.parse(raw);
     if(!Array.isArray(old)) return null;
     return {
-      budget:0, capMonthly:0, capAtual:0, nameA:'Argeu', nameP:'Mayara',
+      budget:0, capMonthly:0, deposits:[], nameA:'Argeu', nameP:'Mayara',
       groups: old.map(gr=>({ g:gr.g, emoji:gr.emoji,
         items:gr.items.map(it=>({ id:it.id, label:it.label, est:it.price||0, real:0, payer:'', ess:!!it.ess, have:!!it.have, checked:!!it.checked })) }))
     };
@@ -335,7 +361,11 @@ function normalizeModel(){
   if(!model.nameP) model.nameP='Mayara';
   if(!model.budget) model.budget=model.budget||0;
   if(!model.capMonthly) model.capMonthly=model.capMonthly||0;
-  if(!model.capAtual) model.capAtual=model.capAtual||0;
+  if(!Array.isArray(model.deposits)) model.deposits=[];
+  if(model.capAtual>0 && model.deposits.length===0){
+    model.deposits.push({ id:uid(), amount:model.capAtual, who:'', when:'', note:'Saldo inicial' });
+  }
+  delete model.capAtual;
 }
 function loadModel(){
   if(window.__INITIAL__ && window.__INITIAL__.groups){ model = window.__INITIAL__; normalizeModel(); return; }
@@ -394,6 +424,9 @@ function render(){
             <button data-act="payer" data-p="P" class="${it.payer==='P'?'on':''}">${escapeHtml(model.nameP)}</button>
           </span>
         </div>
+        <div class="item-link">${it.link
+          ? `<a href="${escapeHtml(it.link)}" target="_blank" rel="noopener noreferrer" class="link-pill">🔗 Ver produto</a><button class="link-btn" data-act="link-edit">editar</button><button class="link-btn" data-act="link-clear">remover</button>`
+          : `<button class="link-btn" data-act="link-add">+ Colar link do produto</button>`}</div>
       </li>`).join('');
     const addForm = filter==='all' ? `
         <li class="additem">
@@ -417,11 +450,31 @@ function render(){
 
   document.getElementById('budget-input').value = model.budget ? model.budget : '';
   document.getElementById('cap-monthly').value = model.capMonthly ? model.capMonthly : '';
-  document.getElementById('cap-atual').value = model.capAtual ? model.capAtual : '';
   document.getElementById('name-a').value = model.nameA;
   document.getElementById('name-p').value = model.nameP;
 
+  renderDeposits();
   updateTotals();
+}
+
+function whoLabel(who){
+  if(who==='A') return model.nameA;
+  if(who==='P') return model.nameP;
+  return 'Inicial';
+}
+function renderDeposits(){
+  const list = document.getElementById('deposit-list');
+  if(!model.deposits.length){
+    list.innerHTML = '<li class="dep-empty">Nenhum depósito registrado ainda.</li>';
+    return;
+  }
+  list.innerHTML = model.deposits.map((d,di)=>`
+    <li class="dep-item" data-di="${di}">
+      <span class="dep-who">${escapeHtml(whoLabel(d.who))}</span>
+      <span class="dep-when">${escapeHtml(d.when||d.note||'')}</span>
+      <span class="dep-amount">${money(d.amount)}</span>
+      <button class="del" data-act="dep-del" aria-label="Remover">×</button>
+    </li>`).join('');
 }
 
 function updateTotals(){
@@ -445,8 +498,13 @@ function updateTotals(){
 
   // capital / déficit
   const capEl = document.getElementById('cap-summary');
-  const falta = est - (model.capAtual||0);
-  if(!model.capMonthly && !model.capAtual){
+  const depA = model.deposits.filter(d=>d.who==='A').reduce((s,d)=>s+d.amount,0);
+  const depP = model.deposits.filter(d=>d.who==='P').reduce((s,d)=>s+d.amount,0);
+  const capAtual = model.deposits.reduce((s,d)=>s+d.amount,0);
+  set('dep-lab-a', model.nameA+' guardou'); set('dep-lab-p', model.nameP+' guardou');
+  set('dep-a',money(depA)); set('dep-p',money(depP)); set('dep-total',money(capAtual));
+  const falta = est - capAtual;
+  if(!model.capMonthly && !capAtual){
     capEl.className='capsum'; capEl.textContent='Preencha os campos acima pra ver o cálculo.';
   } else if(falta<=0){
     capEl.className='capsum superavit';
@@ -489,6 +547,12 @@ function wire(){
     if(type==='check' && li){ const it=item(li); it.checked=!it.checked; save(); render(); }
     else if(type==='del' && li){ model.groups[+li.dataset.g].items.splice(+li.dataset.i,1); save(); render(); }
     else if(type==='payer' && li){ const it=item(li); const p=act.dataset.p; it.payer = it.payer===p ? '' : p; save(); render(); }
+    else if(type==='link-add' || type==='link-edit'){
+      const it = item(li);
+      const url = prompt('Cole o link do produto:', it.link||'');
+      if(url!==null){ it.link = url.trim(); save(); render(); }
+    }
+    else if(type==='link-clear'){ item(li).link=''; save(); render(); }
     else if(type==='add-open'){ act.nextElementSibling.classList.toggle('open'); const n=act.nextElementSibling.querySelector('.add-name'); if(n) n.focus(); }
     else if(type==='add-save'){ addItem(sec); }
   });
@@ -520,9 +584,29 @@ function wire(){
 
   document.getElementById('budget-input').addEventListener('change', e=>{ model.budget = parseMoney(e.target.value); save(); updateTotals(); });
   document.getElementById('cap-monthly').addEventListener('change', e=>{ model.capMonthly = parseMoney(e.target.value); save(); updateTotals(); });
-  document.getElementById('cap-atual').addEventListener('change', e=>{ model.capAtual = parseMoney(e.target.value); save(); updateTotals(); });
-  document.getElementById('name-a').addEventListener('change', e=>{ model.nameA = e.target.value.trim()||'Argeu'; save(); updatePayerLabels(); updateTotals(); });
-  document.getElementById('name-p').addEventListener('change', e=>{ model.nameP = e.target.value.trim()||'Mayara'; save(); updatePayerLabels(); updateTotals(); });
+  document.getElementById('name-a').addEventListener('change', e=>{ model.nameA = e.target.value.trim()||'Argeu'; save(); updatePayerLabels(); renderDeposits(); updateTotals(); });
+  document.getElementById('name-p').addEventListener('change', e=>{ model.nameP = e.target.value.trim()||'Mayara'; save(); updatePayerLabels(); renderDeposits(); updateTotals(); });
+
+  document.getElementById('deposit-list').addEventListener('click', e=>{
+    const act = e.target.closest('[data-act="dep-del"]'); if(!act) return;
+    const li = e.target.closest('.dep-item'); if(!li) return;
+    model.deposits.splice(+li.dataset.di, 1);
+    save(); renderDeposits(); updateTotals();
+  });
+  ['dep-add-a','dep-add-p'].forEach(id=>{
+    document.getElementById(id).addEventListener('click', e=>{
+      const who = e.currentTarget.dataset.who;
+      const input = document.getElementById('dep-amount');
+      const amount = parseMoney(input.value);
+      if(amount<=0){ input.focus(); return; }
+      model.deposits.push({ id:uid(), amount, who, when:new Date().toLocaleDateString('pt-BR'), note:'' });
+      input.value='';
+      save(); renderDeposits(); updateTotals();
+    });
+  });
+  document.getElementById('dep-amount').addEventListener('keydown', e=>{
+    if(e.key==='Enter'){ e.preventDefault(); document.getElementById('dep-add-a').click(); }
+  });
 
   document.querySelectorAll('.chip').forEach(chip=>{
     chip.addEventListener('click', ()=>{
@@ -539,7 +623,7 @@ function addItem(sec){
   const name = sec.querySelector('.add-name').value.trim();
   const est = parseMoney(sec.querySelector('.add-price').value);
   if(!name){ sec.querySelector('.add-name').focus(); return; }
-  model.groups[gi].items.push({ id:uid(), label:name, est, real:0, payer:'', ess:false, have:false, checked:false });
+  model.groups[gi].items.push({ id:uid(), label:name, est, real:0, payer:'', link:'', ess:false, have:false, checked:false });
   save(); render();
   const s2 = document.querySelector(`.group[data-gi="${gi}"]`);
   if(s2){ s2.classList.remove('collapsed'); s2.querySelector('.add-form').classList.add('open'); s2.querySelector('.add-name').focus(); }
