@@ -172,6 +172,26 @@
   .add-group-form input{font:inherit; font-size:14px; border:1px solid var(--line); border-radius:9px; padding:9px 11px; outline:none; flex:1; min-width:130px}
   .add-group-form input:focus{border-color:var(--clay)}
 
+  .tabbar{display:flex; gap:8px; margin-top:18px; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:5px; box-shadow:var(--shadow)}
+  .tabbtn{flex:1; font:inherit; font-size:13.5px; font-weight:600; color:var(--muted); background:none; border:none; border-radius:10px; padding:10px; cursor:pointer}
+  .tabbtn.on{background:var(--clay); color:#fff}
+  #tab-financeiro[hidden]{display:none}
+
+  .chartcard{background:var(--card); border:1px solid var(--line); border-radius:16px; margin-top:14px; padding:16px; box-shadow:var(--shadow)}
+  .chartcard h3{font-family:'Fraunces',serif; font-size:17px; font-weight:600; margin-bottom:2px}
+  .chartcard .hint{font-size:12px; color:var(--muted); margin:3px 0 14px}
+  .chart-empty{font-size:12.5px; color:var(--muted); padding:20px 0; text-align:center}
+  .chart-svg{width:100%; height:auto; display:block; font-family:'Inter',system-ui,sans-serif}
+  .chart-svg text{fill:var(--muted)}
+  .chart-svg .cx-grid{stroke:var(--line); stroke-width:1}
+  .chart-svg .cx-axis{stroke:#C3C2B7; stroke-width:1}
+  .chart-svg .cx-line{fill:none; stroke:var(--ink); stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
+  .chart-svg .cx-dot{stroke:#fff; stroke-width:2}
+  .chart-svg .cx-bar{}
+  .chart-svg .cx-label{font-size:11px; font-weight:600; fill:var(--ink)}
+  .chart-legend{display:flex; gap:16px; flex-wrap:wrap; margin-top:10px; font-size:12px; color:var(--muted)}
+  .chart-legend .sw{display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:5px; vertical-align:-1px}
+
   .actions{display:flex; gap:10px; margin-top:18px}
   .btn{flex:1; font:inherit; font-size:14px; font-weight:600; border-radius:12px; padding:13px; cursor:pointer; text-align:center; border:1px solid var(--line)}
   .btn.primary{color:#fff; background:var(--clay); border-color:var(--clay)}
@@ -214,6 +234,13 @@
 
 <div class="wrap">
 
+<div class="tabbar">
+  <button class="tabbtn on" data-tab="checklist">📋 Checklist</button>
+  <button class="tabbtn" data-tab="financeiro">💰 Financeiro</button>
+</div>
+
+<div id="tab-checklist">
+
 <div class="progress-card">
   <div class="pct-row">
     <div class="pct"><span id="pct">0</span><small>%</small></div>
@@ -231,6 +258,40 @@
   <div class="bud-status" id="bud-status">Defina um teto pra acompanhar o quanto falta.</div>
   <div class="count-line"><b id="done">0</b> de <b id="total">0</b> itens · faltam <b id="left">0</b></div>
 </div>
+
+<div class="divcard">
+  <h3>Divisão de custos</h3>
+  <p class="hint">Marque quem pagou cada item comprado (botões em cada linha) pra ver o acerto 50/50.</p>
+  <div class="names">
+    <label><span class="cap">Pessoa 1</span><input id="name-a" placeholder="Argeu"></label>
+    <label><span class="cap">Pessoa 2</span><input id="name-p" placeholder="Mayara"></label>
+  </div>
+  <div class="divrow"><span id="lab-a">Argeu pagou</span><span class="v" id="pay-a">R$ 0</span></div>
+  <div class="divrow"><span id="lab-p">Mayara pagou</span><span class="v" id="pay-p">R$ 0</span></div>
+  <div class="divrow"><span>Média justa (50/50)</span><span class="v" id="media">R$ 0</span></div>
+  <div class="acerto" id="acerto">Ninguém marcou compras ainda.</div>
+</div>
+
+<div class="filters">
+  <button class="chip on" data-f="all">Tudo</button>
+  <button class="chip" data-f="left">Só o que falta</button>
+  <button class="chip" data-f="ess">Só essenciais</button>
+  <button class="chip" data-f="bought">Comprados</button>
+</div>
+
+<div id="app"></div>
+
+<div class="add-group">
+  <button class="add-toggle" id="group-open">+ Adicionar cômodo / categoria</button>
+  <div class="add-group-form" id="group-form">
+    <input id="group-name" placeholder="Nome do cômodo (ex.: Escritório)">
+    <button class="add-save" id="group-save">Adicionar</button>
+  </div>
+</div>
+
+</div>
+
+<div id="tab-financeiro" hidden>
 
 <div class="capcard">
   <h3>Nosso capital</h3>
@@ -294,34 +355,18 @@
   </div>
 </div>
 
-<div class="divcard">
-  <h3>Divisão de custos</h3>
-  <p class="hint">Marque quem pagou cada item comprado (botões em cada linha) pra ver o acerto 50/50.</p>
-  <div class="names">
-    <label><span class="cap">Pessoa 1</span><input id="name-a" placeholder="Argeu"></label>
-    <label><span class="cap">Pessoa 2</span><input id="name-p" placeholder="Mayara"></label>
-  </div>
-  <div class="divrow"><span id="lab-a">Argeu pagou</span><span class="v" id="pay-a">R$ 0</span></div>
-  <div class="divrow"><span id="lab-p">Mayara pagou</span><span class="v" id="pay-p">R$ 0</span></div>
-  <div class="divrow"><span>Média justa (50/50)</span><span class="v" id="media">R$ 0</span></div>
-  <div class="acerto" id="acerto">Ninguém marcou compras ainda.</div>
+<div class="chartcard" id="chart-deposits-card">
+  <h3>Evolução dos depósitos</h3>
+  <p class="hint">Cada depósito, quando foi e quanto já dá de total acumulado.</p>
+  <div id="chart-deposits"></div>
 </div>
 
-<div class="filters">
-  <button class="chip on" data-f="all">Tudo</button>
-  <button class="chip" data-f="left">Só o que falta</button>
-  <button class="chip" data-f="ess">Só essenciais</button>
-  <button class="chip" data-f="bought">Comprados</button>
+<div class="chartcard" id="chart-progress-card">
+  <h3>Estimado × comprado × guardado</h3>
+  <p class="hint">Quanto custa tudo, quanto já foi comprado e quanto já está guardado.</p>
+  <div id="chart-progress"></div>
 </div>
 
-<div id="app"></div>
-
-<div class="add-group">
-  <button class="add-toggle" id="group-open">+ Adicionar cômodo / categoria</button>
-  <div class="add-group-form" id="group-form">
-    <input id="group-name" placeholder="Nome do cômodo (ex.: Escritório)">
-    <button class="add-save" id="group-save">Adicionar</button>
-  </div>
 </div>
 
 <div class="actions">
@@ -669,6 +714,79 @@ function updateTotals(){
   else if(Math.abs(saldoA)<1) ac.textContent='Tá quitado ✓ — cada um pagou a média.';
   else if(saldoA>0) ac.textContent=model.nameP+' deve '+money(saldoA)+' pro '+model.nameA+'.';
   else ac.textContent=model.nameA+' deve '+money(-saldoA)+' pra '+model.nameP+'.';
+
+  renderCharts();
+}
+
+/* ================= GRÁFICOS (SVG puro) ================= */
+const CHART_COLORS = { A:'#B5673F', P:'#0A9696', other:'#4B4FC4' };
+function renderCharts(){
+  renderDepositsChart();
+  renderProgressChart();
+}
+function renderDepositsChart(){
+  const el = document.getElementById('chart-deposits');
+  if(!el) return;
+  const deps = model.deposits;
+  if(!deps.length){ el.innerHTML = '<p class="chart-empty">Nenhum depósito registrado ainda.</p>'; return; }
+  let running = 0;
+  const points = deps.map(d=>{ running += (d.amount||0); return { who:d.who, amount:d.amount, when:d.when||d.note||'', cum: running }; });
+  const maxV = Math.max(running, 1);
+  const W=600, H=220, padL=58, padR=14, padT=16, padB=16;
+  const plotW = W-padL-padR, plotH = H-padT-padB;
+  const x = i => padL + (points.length===1 ? plotW/2 : (i/(points.length-1))*plotW);
+  const y = v => padT + plotH - (v/maxV)*plotH;
+  const colorFor = who => CHART_COLORS[who] || CHART_COLORS.other;
+
+  const gridLines = [0,0.5,1].map(f=>{
+    const v = maxV*f, yy = y(v);
+    return `<line class="cx-grid" x1="${padL}" y1="${yy.toFixed(1)}" x2="${W-padR}" y2="${yy.toFixed(1)}"/><text x="${padL-8}" y="${(yy+4).toFixed(1)}" text-anchor="end" font-size="10">${money(v)}</text>`;
+  }).join('');
+  const linePath = points.map((p,i)=> (i===0?'M':'L') + x(i).toFixed(1) + ',' + y(p.cum).toFixed(1)).join(' ');
+  const dots = points.map((p,i)=>`<circle class="cx-dot" cx="${x(i).toFixed(1)}" cy="${y(p.cum).toFixed(1)}" r="5" fill="${colorFor(p.who)}"><title>${escapeHtml(whoLabel(p.who))} — ${money(p.amount)} em ${escapeHtml(p.when)} (total até então: ${money(p.cum)})</title></circle>`).join('');
+
+  el.innerHTML = `
+    <svg class="chart-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Evolução acumulada dos depósitos, ${points.length} depósitos, total ${money(running)}">
+      ${gridLines}
+      <line class="cx-axis" x1="${padL}" y1="${(padT+plotH).toFixed(1)}" x2="${W-padR}" y2="${(padT+plotH).toFixed(1)}"/>
+      <path class="cx-line" d="${linePath}"/>
+      ${dots}
+    </svg>
+    <div class="chart-legend">
+      <span><span class="sw" style="background:${CHART_COLORS.A}"></span>${escapeHtml(model.nameA)}</span>
+      <span><span class="sw" style="background:${CHART_COLORS.P}"></span>${escapeHtml(model.nameP)}</span>
+    </div>`;
+}
+function renderProgressChart(){
+  const el = document.getElementById('chart-progress');
+  if(!el) return;
+  const all = model.groups.flatMap(g=>g.items);
+  const est = all.reduce((s,i)=>s+(i.est||0),0);
+  const buy = all.filter(i=>i.checked).reduce((s,i)=>s+eff(i),0);
+  const cap = model.deposits.reduce((s,d)=>s+(d.amount||0),0);
+  const bars = [
+    { label:'Estimado', value:est, color:CHART_COLORS.A },
+    { label:'Comprado', value:buy, color:CHART_COLORS.P },
+    { label:'Guardado', value:cap, color:CHART_COLORS.other }
+  ];
+  if(est===0 && buy===0 && cap===0){ el.innerHTML = '<p class="chart-empty">Sem dados ainda pra comparar.</p>'; return; }
+  const maxV = Math.max(...bars.map(b=>b.value), 1);
+  const W=300, H=200, padB=30, padT=26;
+  const barW=56, gap=30, plotH = H-padB-padT;
+  const totalW = bars.length*barW + (bars.length-1)*gap;
+  const startX = (W-totalW)/2;
+  const barsHtml = bars.map((b,i)=>{
+    const h = Math.max((b.value/maxV)*plotH, 2);
+    const bx = startX + i*(barW+gap);
+    const by = padT + plotH - h;
+    return `<rect class="cx-bar" x="${bx.toFixed(1)}" y="${by.toFixed(1)}" width="${barW}" height="${h.toFixed(1)}" rx="4" fill="${b.color}"><title>${b.label}: ${money(b.value)}</title></rect>
+      <text class="cx-label" x="${(bx+barW/2).toFixed(1)}" y="${(by-8).toFixed(1)}" text-anchor="middle">${money(b.value)}</text>
+      <text x="${(bx+barW/2).toFixed(1)}" y="${H-8}" text-anchor="middle" font-size="11">${b.label}</text>`;
+  }).join('');
+  el.innerHTML = `<svg class="chart-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Comparação entre estimado, comprado e guardado">
+    <line class="cx-axis" x1="10" y1="${(padT+plotH).toFixed(1)}" x2="${W-10}" y2="${(padT+plotH).toFixed(1)}"/>
+    ${barsHtml}
+  </svg>`;
 }
 
 /* ================= EVENTOS ================= */
@@ -767,6 +885,16 @@ function wire(){
       filter = chip.dataset.f;
       document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on', c===chip));
       render();
+    });
+  });
+
+  document.querySelectorAll('.tabbtn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const tab = btn.dataset.tab;
+      document.querySelectorAll('.tabbtn').forEach(b=>b.classList.toggle('on', b===btn));
+      document.getElementById('tab-checklist').hidden = tab!=='checklist';
+      document.getElementById('tab-financeiro').hidden = tab!=='financeiro';
+      if(tab==='financeiro') renderCharts();
     });
   });
 }
