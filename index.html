@@ -60,9 +60,9 @@
   .count-line{font-size:12.5px; opacity:.85; margin-top:10px}
   .count-line b{font-weight:700}
 
-  .divcard,.capcard{background:var(--card); border:1px solid var(--line); border-radius:16px; margin-top:14px; padding:16px; box-shadow:var(--shadow)}
-  .divcard h3,.capcard h3{font-family:'Fraunces',serif; font-size:17px; font-weight:600}
-  .divcard .hint,.capcard .hint{font-size:12px; color:var(--muted); margin:3px 0 12px}
+  .divcard,.capcard,.agreecard{background:var(--card); border:1px solid var(--line); border-radius:16px; margin-top:14px; padding:16px; box-shadow:var(--shadow)}
+  .divcard h3,.capcard h3,.agreecard h3{font-family:'Fraunces',serif; font-size:17px; font-weight:600}
+  .divcard .hint,.capcard .hint,.agreecard .hint{font-size:12px; color:var(--muted); margin:3px 0 12px}
   .names{display:flex; gap:8px; margin-bottom:6px}
   .names label{flex:1; min-width:0}
   .names .cap{font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); font-weight:600; display:block; margin-bottom:3px}
@@ -90,6 +90,21 @@
   .deposit-add .fld{flex:none}
   .dep-btn{font:inherit; font-size:12.5px; font-weight:600; border:1px solid var(--line); background:#fff; color:var(--clay); border-radius:9px; padding:8px 12px; cursor:pointer}
   .dep-btn:active{background:var(--clay-soft)}
+
+  .agree-warn{background:var(--clay-soft); color:var(--clay-deep); border-radius:10px; padding:12px 13px; font-size:12.5px; line-height:1.5; margin-bottom:12px}
+  .agree-warn b{font-weight:700}
+  .agree-field{margin-bottom:12px}
+  .agree-field .cap{font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); font-weight:600; display:block; margin-bottom:3px}
+  .agree-field input{width:100%; font:inherit; font-size:14px; border:1px solid var(--line); border-radius:9px; padding:9px 11px; outline:none; background:#fff}
+  .agree-field input:focus{border-color:var(--clay)}
+  .agree-row{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 0; border-top:1px solid var(--line); font-size:13.5px}
+  .agree-row .who{font-weight:600}
+  .agree-sign{font:inherit; font-size:12.5px; font-weight:600; color:#fff; background:var(--clay); border:none; border-radius:9px; padding:8px 13px; cursor:pointer}
+  .agree-sign:disabled{background:#D8CDBC; cursor:not-allowed}
+  .agree-signed{color:var(--sage); font-weight:600; font-size:12.5px; text-align:right}
+  .agree-pending{color:var(--muted); font-size:12px}
+  .agree-pdf{margin-top:14px; display:flex; flex-direction:column; gap:6px}
+  .agree-pdf-note{font-size:11.5px; color:var(--muted); line-height:1.4}
 
   .filters{display:flex; gap:8px; margin-top:16px; flex-wrap:wrap}
   .chip{font:inherit; font-size:13px; font-weight:600; border:1px solid var(--line); background:#fff; color:var(--muted); border-radius:99px; padding:8px 15px; cursor:pointer}
@@ -229,6 +244,30 @@
   <div class="capsum" id="cap-summary">Preencha os campos acima pra ver o cálculo.</div>
 </div>
 
+<div class="agreecard">
+  <h3>Acordo de depósitos</h3>
+  <p class="hint">Como vocês ainda não têm conta conjunta, este é um registro de que os dois estão cientes de como os depósitos funcionam.</p>
+  <div class="agree-warn">
+    ⚠️ <b>Isto não é um contrato jurídico formal</b> — é um registro de entendimento mútuo entre vocês dois, documentando que ambos sabem que os valores guardados vão para a conta abaixo e ficam rastreados individualmente (extrato de depósitos, acima). Para valor jurídico de verdade, considerem formalizar isso com um advogado (ex.: contrato de convivência / união estável).
+  </div>
+  <div class="agree-field">
+    <span class="cap">Conta usada para os depósitos</span>
+    <input id="agree-account" placeholder="Banco, agência e conta">
+  </div>
+  <div class="agree-row">
+    <span class="who" id="agree-who-a">Argeu</span>
+    <span id="agree-status-a"></span>
+  </div>
+  <div class="agree-row">
+    <span class="who" id="agree-who-p">Mayara</span>
+    <span id="agree-status-p"></span>
+  </div>
+  <div class="agree-pdf">
+    <button class="btn ghost" id="agree-pdf-btn">⬇️ Baixar termo em PDF (com senha)</button>
+    <span class="agree-pdf-note">O PDF baixado é protegido por uma senha que você escolhe na hora (criptografia RC4 128-bit) — guardem essa senha em local seguro. Isso protege o arquivo baixado, não substitui um advogado.</span>
+  </div>
+</div>
+
 <div class="divcard">
   <h3>Divisão de custos</h3>
   <p class="hint">Marque quem pagou cada item comprado (botões em cada linha) pra ver o acerto 50/50.</p>
@@ -337,6 +376,7 @@ let auth = null, db = null, remoteRef = null, suppressNextWrite = false;
 function seed(){
   return {
     budget: 0, capMonthly: 0, deposits: [], nameA: 'Argeu', nameP: 'Mayara',
+    agreement: { accountRef:'', signatures:{ A:null, P:null } },
     groups: DEFAULT_GROUPS.map(gr => ({
       g:gr.g, emoji:gr.emoji,
       items:gr.items.map(it => ({ id:it[0], label:it[1], est:it[2], real:0, payer:'', link:'', ess:!!it[3], have:!!it[4], checked:!!it[4] }))
@@ -366,6 +406,9 @@ function normalizeModel(){
     model.deposits.push({ id:uid(), amount:model.capAtual, who:'', when:'', note:'Saldo inicial' });
   }
   delete model.capAtual;
+  if(!model.agreement || typeof model.agreement!=='object') model.agreement = { accountRef:'', signatures:{A:null,P:null} };
+  if(!model.agreement.signatures) model.agreement.signatures = { A:null, P:null };
+  if(!model.agreement.accountRef) model.agreement.accountRef = '';
 }
 function loadModel(){
   if(window.__INITIAL__ && window.__INITIAL__.groups){ model = window.__INITIAL__; normalizeModel(); return; }
@@ -454,7 +497,32 @@ function render(){
   document.getElementById('name-p').value = model.nameP;
 
   renderDeposits();
+  renderAgreement();
   updateTotals();
+}
+
+function renderAgreement(){
+  const accEl = document.getElementById('agree-account');
+  if(document.activeElement!==accEl) accEl.value = model.agreement.accountRef || '';
+  set('agree-who-a', model.nameA);
+  set('agree-who-p', model.nameP);
+  renderAgreeStatus('A', 'agree-status-a');
+  renderAgreeStatus('P', 'agree-status-p');
+}
+function renderAgreeStatus(who, elId){
+  const el = document.getElementById(elId);
+  const sig = model.agreement.signatures[who];
+  if(sig){
+    const d = sig.when ? new Date(sig.when) : null;
+    const dateTxt = d ? d.toLocaleDateString('pt-BR') : '';
+    el.innerHTML = `<span class="agree-signed">✓ confirmado em ${dateTxt}<br>${escapeHtml(sig.email||'')}</span>`;
+    return;
+  }
+  if(auth && auth.currentUser){
+    el.innerHTML = `<button class="agree-sign" data-act="agree-sign" data-who="${who}">Confirmar que estou ciente</button>`;
+  } else {
+    el.innerHTML = `<span class="agree-pending">Faça login pra confirmar</span>`;
+  }
 }
 
 function whoLabel(who){
@@ -584,8 +652,8 @@ function wire(){
 
   document.getElementById('budget-input').addEventListener('change', e=>{ model.budget = parseMoney(e.target.value); save(); updateTotals(); });
   document.getElementById('cap-monthly').addEventListener('change', e=>{ model.capMonthly = parseMoney(e.target.value); save(); updateTotals(); });
-  document.getElementById('name-a').addEventListener('change', e=>{ model.nameA = e.target.value.trim()||'Argeu'; save(); updatePayerLabels(); renderDeposits(); updateTotals(); });
-  document.getElementById('name-p').addEventListener('change', e=>{ model.nameP = e.target.value.trim()||'Mayara'; save(); updatePayerLabels(); renderDeposits(); updateTotals(); });
+  document.getElementById('name-a').addEventListener('change', e=>{ model.nameA = e.target.value.trim()||'Argeu'; save(); updatePayerLabels(); renderDeposits(); renderAgreement(); updateTotals(); });
+  document.getElementById('name-p').addEventListener('change', e=>{ model.nameP = e.target.value.trim()||'Mayara'; save(); updatePayerLabels(); renderDeposits(); renderAgreement(); updateTotals(); });
 
   document.getElementById('deposit-list').addEventListener('click', e=>{
     const act = e.target.closest('[data-act="dep-del"]'); if(!act) return;
@@ -607,6 +675,18 @@ function wire(){
   document.getElementById('dep-amount').addEventListener('keydown', e=>{
     if(e.key==='Enter'){ e.preventDefault(); document.getElementById('dep-add-a').click(); }
   });
+
+  document.getElementById('agree-account').addEventListener('change', e=>{
+    model.agreement.accountRef = e.target.value.trim(); save();
+  });
+  document.querySelector('.agreecard').addEventListener('click', e=>{
+    const btn = e.target.closest('[data-act="agree-sign"]'); if(!btn) return;
+    if(!auth || !auth.currentUser) return;
+    const who = btn.dataset.who;
+    model.agreement.signatures[who] = { email: auth.currentUser.email, when: new Date().toISOString() };
+    save(); renderAgreement();
+  });
+  document.getElementById('agree-pdf-btn').addEventListener('click', buildAgreementPDF);
 
   document.querySelectorAll('.chip').forEach(chip=>{
     chip.addEventListener('click', ()=>{
@@ -652,6 +732,88 @@ function exportHTML(){
   a.remove(); setTimeout(()=>URL.revokeObjectURL(url), 1500);
 }
 
+/* ================= TERMO EM PDF (com senha) ================= */
+async function buildAgreementPDF(){
+  const senha = prompt('Escolha uma senha pra proteger o PDF (vai ser necessária pra abrir o arquivo depois):');
+  if(!senha){ return; }
+  const btn = document.getElementById('agree-pdf-btn');
+  const original = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Gerando PDF…';
+  try{
+    await loadScript('https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js');
+    await loadScript('https://cdn.jsdelivr.net/npm/@pdfsmaller/pdf-encrypt-lite@1.2.0/dist/pdf-encrypt-lite.umd.js');
+
+    const { PDFDocument, StandardFonts, rgb } = PDFLib;
+    const pdfDoc = await PDFDocument.create();
+    const pageW = 595.28, pageH = 841.89, margin = 50, maxWidth = pageW - margin*2;
+    const page = pdfDoc.addPage([pageW, pageH]);
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const bold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    let y = pageH - margin;
+
+    function wrapText(text, f, size){
+      const words = String(text).split(' ');
+      const lines = []; let line = '';
+      words.forEach(w=>{
+        const test = line ? line+' '+w : w;
+        if(f.widthOfTextAtSize(test, size) > maxWidth && line){ lines.push(line); line = w; }
+        else line = test;
+      });
+      if(line) lines.push(line);
+      return lines;
+    }
+    function drawLine(text, opts={}){
+      const size = opts.size || 11;
+      const f = opts.bold ? bold : font;
+      wrapText(text, f, size).forEach(l=>{
+        page.drawText(l, { x: margin, y, size, font:f, color: rgb(0.16,0.14,0.12) });
+        y -= size + 6;
+      });
+      y -= opts.gap || 4;
+    }
+
+    drawLine('Acordo de Depósitos — Argeu & Mayara', { size:16, bold:true, gap:10 });
+    drawLine('Gerado em ' + new Date().toLocaleString('pt-BR'), { size:9, gap:14 });
+    drawLine('Este documento registra o entendimento mútuo entre ' + model.nameA + ' e ' + model.nameP + ' sobre os valores guardados para a casa nova, já que não possuem conta bancária conjunta. NÃO é um contrato jurídico formal — para valor legal, procurem um advogado (ex.: contrato de convivência / união estável).', { size:10, gap:14 });
+    drawLine('Conta usada para os depósitos: ' + (model.agreement.accountRef || '(não preenchida)'), { bold:true, gap:14 });
+
+    const depA = model.deposits.filter(d=>d.who==='A').reduce((s,d)=>s+d.amount,0);
+    const depP = model.deposits.filter(d=>d.who==='P').reduce((s,d)=>s+d.amount,0);
+    const depTotal = model.deposits.reduce((s,d)=>s+d.amount,0);
+    drawLine('Extrato de depósitos:', { bold:true, gap:6 });
+    drawLine(model.nameA + ' guardou: ' + money(depA), { gap:2 });
+    drawLine(model.nameP + ' guardou: ' + money(depP), { gap:2 });
+    drawLine('Total guardado: ' + money(depTotal), { gap:14 });
+
+    if(model.deposits.length){
+      model.deposits.forEach(d=>{
+        drawLine('• ' + whoLabel(d.who) + ' — ' + money(d.amount) + (d.when?(' em '+d.when):''), { size:9, gap:2 });
+      });
+      y -= 8;
+    }
+
+    drawLine('Confirmações:', { bold:true, gap:6 });
+    ['A','P'].forEach(who=>{
+      const sig = model.agreement.signatures[who];
+      const nome = who==='A' ? model.nameA : model.nameP;
+      if(sig) drawLine(nome + ': confirmado em ' + new Date(sig.when).toLocaleString('pt-BR') + ' (' + sig.email + ')', { gap:4 });
+      else drawLine(nome + ': ainda não confirmou', { gap:4 });
+    });
+
+    const pdfBytes = await pdfDoc.save();
+    const encrypted = await PDFEncryptLite.encryptPDF(pdfBytes, senha);
+    const blob = new Blob([encrypted], { type:'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'termo-deposito-argeu-mayara.pdf'; document.body.appendChild(a); a.click();
+    a.remove(); setTimeout(()=>URL.revokeObjectURL(url), 1500);
+  }catch(e){
+    alert('Não deu pra gerar o PDF agora. Confira sua conexão e tente de novo.');
+  }finally{
+    btn.disabled = false; btn.textContent = original;
+  }
+}
+
 /* ================= SINCRONIZAÇÃO (Firebase, opcional) ================= */
 function isFirebaseConfigured(){
   return FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey.indexOf('COLOQUE_AQUI')===-1;
@@ -680,6 +842,7 @@ async function initSync(){
         const lo=document.getElementById('sync-logout'); if(lo) lo.addEventListener('click', ()=>auth.signOut());
       }
       else { remoteRef=null; showAuthGate(); badge.className='sync-badge off'; badge.textContent='💾 Sincronização com a nuvem não configurada ainda'; }
+      renderAgreement();
     });
   }catch(e){
     badge.className='sync-badge off';

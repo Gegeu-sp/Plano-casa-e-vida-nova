@@ -33,6 +33,7 @@ e guardado — sem instalar nada, sem servidor, sem complicação.
 | 🐷 **Nosso capital** | Registre cada depósito (quanto e quem guardou) — o site soma tudo sozinho e calcula déficit ou superávit em relação ao que falta, e em quantos meses (no ritmo atual) fecha a conta. |
 | 🤝 **Divisão de custos** | Cada item tem valor estimado, valor real e "quem pagou" — o acerto 50/50 é calculado automaticamente. |
 | 🔗 **Link do produto** | Cole o link de onde encontrou cada item pra não perder depois. |
+| 📝 **Acordo de depósitos** | Registro de entendimento mútuo (não é contrato jurídico) sobre a conta usada pros depósitos, com confirmação individual de cada um (exige login) e PDF protegido por senha pra baixar como resguardo. |
 | 🔎 **Filtros** | Tudo / só o que falta / só essenciais. |
 | ➕ **Totalmente editável** | Adicione itens e cômodos novos, remova o que não faz sentido, tudo direto na página. |
 | ☁️ **Sincronização (opcional)** | Configurando o Firebase, os dados aparecem automaticamente nos dois aparelhos — veja abaixo. |
