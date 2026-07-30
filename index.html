@@ -105,6 +105,10 @@
   .agree-pending{color:var(--muted); font-size:12px}
   .agree-pdf{margin-top:14px; display:flex; flex-direction:column; gap:6px}
   .agree-pdf-note{font-size:11.5px; color:var(--muted); line-height:1.4}
+  .agree-parties{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:14px}
+  .agree-party{flex:1; min-width:220px}
+  .agree-party h4{font-size:12.5px; font-weight:700; color:var(--clay); margin-bottom:8px}
+  .agree-party .agree-field{margin-bottom:8px}
 
   .filters{display:flex; gap:8px; margin-top:16px; flex-wrap:wrap}
   .chip{font:inherit; font-size:13px; font-weight:600; border:1px solid var(--line); background:#fff; color:var(--muted); border-radius:99px; padding:8px 15px; cursor:pointer}
@@ -250,6 +254,22 @@
   <div class="agree-warn">
     ⚠️ <b>Isto não é um contrato jurídico formal</b> — é um registro de entendimento mútuo entre vocês dois, documentando que ambos sabem que os valores guardados vão para a conta abaixo e ficam rastreados individualmente (extrato de depósitos, acima). Para valor jurídico de verdade, considerem formalizar isso com um advogado (ex.: contrato de convivência / união estável).
   </div>
+
+  <div class="agree-parties">
+    <div class="agree-party">
+      <h4 id="agree-party-h-a">Parte 1</h4>
+      <div class="agree-field"><span class="cap">Nome completo</span><input id="agree-name-a" placeholder="Nome completo"></div>
+      <div class="agree-field"><span class="cap">CPF</span><input id="agree-cpf-a" placeholder="000.000.000-00"></div>
+      <div class="agree-field"><span class="cap">Endereço</span><input id="agree-addr-a" placeholder="Rua, número, complemento"></div>
+    </div>
+    <div class="agree-party">
+      <h4 id="agree-party-h-p">Parte 2</h4>
+      <div class="agree-field"><span class="cap">Nome completo</span><input id="agree-name-p" placeholder="Nome completo"></div>
+      <div class="agree-field"><span class="cap">CPF</span><input id="agree-cpf-p" placeholder="000.000.000-00"></div>
+      <div class="agree-field"><span class="cap">Endereço</span><input id="agree-addr-p" placeholder="Rua, número, complemento"></div>
+    </div>
+  </div>
+
   <div class="agree-field">
     <span class="cap">Conta usada para os depósitos</span>
     <input id="agree-account" placeholder="Banco, agência e conta">
@@ -376,7 +396,7 @@ let auth = null, db = null, remoteRef = null, suppressNextWrite = false;
 function seed(){
   return {
     budget: 0, capMonthly: 0, deposits: [], nameA: 'Argeu', nameP: 'Mayara',
-    agreement: { accountRef:'', signatures:{ A:null, P:null } },
+    agreement: { accountRef:'', parties:{ A:{name:'',cpf:'',address:''}, P:{name:'',cpf:'',address:''} }, signatures:{ A:null, P:null } },
     groups: DEFAULT_GROUPS.map(gr => ({
       g:gr.g, emoji:gr.emoji,
       items:gr.items.map(it => ({ id:it[0], label:it[1], est:it[2], real:0, payer:'', link:'', ess:!!it[3], have:!!it[4], checked:!!it[4] }))
@@ -406,9 +426,13 @@ function normalizeModel(){
     model.deposits.push({ id:uid(), amount:model.capAtual, who:'', when:'', note:'Saldo inicial' });
   }
   delete model.capAtual;
-  if(!model.agreement || typeof model.agreement!=='object') model.agreement = { accountRef:'', signatures:{A:null,P:null} };
+  if(!model.agreement || typeof model.agreement!=='object') model.agreement = { accountRef:'', parties:{A:{name:'',cpf:'',address:''},P:{name:'',cpf:'',address:''}}, signatures:{A:null,P:null} };
   if(!model.agreement.signatures) model.agreement.signatures = { A:null, P:null };
   if(!model.agreement.accountRef) model.agreement.accountRef = '';
+  if(!model.agreement.parties) model.agreement.parties = { A:{name:'',cpf:'',address:''}, P:{name:'',cpf:'',address:''} };
+  ['A','P'].forEach(who=>{
+    if(!model.agreement.parties[who]) model.agreement.parties[who] = {name:'',cpf:'',address:''};
+  });
 }
 function loadModel(){
   if(window.__INITIAL__ && window.__INITIAL__.groups){ model = window.__INITIAL__; normalizeModel(); return; }
@@ -506,6 +530,15 @@ function renderAgreement(){
   if(document.activeElement!==accEl) accEl.value = model.agreement.accountRef || '';
   set('agree-who-a', model.nameA);
   set('agree-who-p', model.nameP);
+  set('agree-party-h-a', model.nameA);
+  set('agree-party-h-p', model.nameP);
+  const setIfBlurred = (id, val) => { const el=document.getElementById(id); if(document.activeElement!==el) el.value = val||''; };
+  setIfBlurred('agree-name-a', model.agreement.parties.A.name);
+  setIfBlurred('agree-cpf-a', model.agreement.parties.A.cpf);
+  setIfBlurred('agree-addr-a', model.agreement.parties.A.address);
+  setIfBlurred('agree-name-p', model.agreement.parties.P.name);
+  setIfBlurred('agree-cpf-p', model.agreement.parties.P.cpf);
+  setIfBlurred('agree-addr-p', model.agreement.parties.P.address);
   renderAgreeStatus('A', 'agree-status-a');
   renderAgreeStatus('P', 'agree-status-p');
 }
@@ -679,6 +712,12 @@ function wire(){
   document.getElementById('agree-account').addEventListener('change', e=>{
     model.agreement.accountRef = e.target.value.trim(); save();
   });
+  [['agree-name-a','A','name'],['agree-cpf-a','A','cpf'],['agree-addr-a','A','address'],
+   ['agree-name-p','P','name'],['agree-cpf-p','P','cpf'],['agree-addr-p','P','address']].forEach(([id,who,field])=>{
+    document.getElementById(id).addEventListener('change', e=>{
+      model.agreement.parties[who][field] = e.target.value.trim(); save();
+    });
+  });
   document.querySelector('.agreecard').addEventListener('click', e=>{
     const btn = e.target.closest('[data-act="agree-sign"]'); if(!btn) return;
     if(!auth || !auth.currentUser) return;
@@ -775,6 +814,17 @@ async function buildAgreementPDF(){
     drawLine('Acordo de Depósitos — Argeu & Mayara', { size:16, bold:true, gap:10 });
     drawLine('Gerado em ' + new Date().toLocaleString('pt-BR'), { size:9, gap:14 });
     drawLine('Este documento registra o entendimento mútuo entre ' + model.nameA + ' e ' + model.nameP + ' sobre os valores guardados para a casa nova, já que não possuem conta bancária conjunta. NÃO é um contrato jurídico formal — para valor legal, procurem um advogado (ex.: contrato de convivência / união estável).', { size:10, gap:14 });
+
+    drawLine('Partes:', { bold:true, gap:6 });
+    ['A','P'].forEach(who=>{
+      const p = model.agreement.parties[who];
+      const nome = who==='A' ? model.nameA : model.nameP;
+      drawLine(nome + (p.name ? ' — ' + p.name : ''), { gap:2 });
+      if(p.cpf) drawLine('CPF: ' + p.cpf, { size:9, gap:2 });
+      if(p.address) drawLine('Endereço: ' + p.address, { size:9, gap:8 });
+      else y -= 4;
+    });
+
     drawLine('Conta usada para os depósitos: ' + (model.agreement.accountRef || '(não preenchida)'), { bold:true, gap:14 });
 
     const depA = model.deposits.filter(d=>d.who==='A').reduce((s,d)=>s+d.amount,0);
