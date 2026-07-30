@@ -8,10 +8,10 @@
 </p>
 
 <p align="center">
-  <img alt="site estático" src="https://img.shields.io/badge/site-est%C3%A1tico%20%E2%80%94%20HTML%2FCSS%2FJS-8A4B2C?style=flat-square">
-  <img alt="sem build" src="https://img.shields.io/badge/build-nenhum%20necess%C3%A1rio-7C8768?style=flat-square">
-  <img alt="sincronizacao" src="https://img.shields.io/badge/sincroniza%C3%A7%C3%A3o-firebase%20(opcional)-C79A46?style=flat-square">
-  <img alt="feito com carinho" src="https://img.shields.io/badge/feito%20com-%E2%99%A5-B5673F?style=flat-square">
+  <img alt="site estático" src="https://img.shields.io/badge/site-est%C3%A1tico%20%E2%80%94%20HTML%2FCSS%2FJS-B5673F?style=for-the-badge&labelColor=1B1611">
+  <img alt="sem build" src="https://img.shields.io/badge/build-nenhum%20necess%C3%A1rio-7C8768?style=for-the-badge&labelColor=1B1611">
+  <img alt="sincronizacao" src="https://img.shields.io/badge/sincroniza%C3%A7%C3%A3o-firebase-C79A46?style=for-the-badge&labelColor=1B1611">
+  <img alt="feito com carinho" src="https://img.shields.io/badge/feito%20com-%E2%99%A5-8A4B2C?style=for-the-badge&labelColor=1B1611">
 </p>
 
 ---
@@ -30,8 +30,9 @@ e guardado — sem instalar nada, sem servidor, sem complicação.
 |---|---|
 | ✅ **Checklist por cômodo** | Marque o que já resolveram e acompanhe o progresso geral (barra e %). |
 | 💰 **Orçamento teto** | Defina um teto e veja se a estimativa está estourando ou com folga. |
-| 🐷 **Nosso capital** | Informe quanto guardam por mês e o capital atual — o site calcula sozinho se está em déficit ou superávit, e em quantos meses (no ritmo atual) fecha a conta. |
+| 🐷 **Nosso capital** | Registre cada depósito (quanto e quem guardou) — o site soma tudo sozinho e calcula déficit ou superávit em relação ao que falta, e em quantos meses (no ritmo atual) fecha a conta. |
 | 🤝 **Divisão de custos** | Cada item tem valor estimado, valor real e "quem pagou" — o acerto 50/50 é calculado automaticamente. |
+| 🔗 **Link do produto** | Cole o link de onde encontrou cada item pra não perder depois. |
 | 🔎 **Filtros** | Tudo / só o que falta / só essenciais. |
 | ➕ **Totalmente editável** | Adicione itens e cômodos novos, remova o que não faz sentido, tudo direto na página. |
 | ☁️ **Sincronização (opcional)** | Configurando o Firebase, os dados aparecem automaticamente nos dois aparelhos — veja abaixo. |
