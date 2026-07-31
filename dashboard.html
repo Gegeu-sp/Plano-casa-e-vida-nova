@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel — Argeu &amp; Mayara</title>
+<link rel="icon" href="assets/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Mesma paleta do index.html — claro/escuro compartilhados via variáveis CSS. */
+  :root{
+    color-scheme: light;
+    --paper:#F6F1EA; --card:#FFFFFF; --ink:#2A241F; --muted:#8D8172;
+    --clay:#B5673F; --clay-deep:#8A4B2C; --clay-soft:#F1DED0; --clay-soft-text:#8A4B2C;
+    --sage:#7C8768; --sage-soft:#E7EBDD; --sage-soft-text:#4B5640;
+    --gold:#C79A46; --gold-soft:#F1E6C8;
+    --line:#E9E1D3; --border-soft:#D8CDBC; --icon-muted:#C9BCA9;
+    --surface-2:#F7F2EA; --surface-hover:#F1EBE0; --error:#B2543A;
+    --shadow:0 1px 2px rgba(42,36,31,.06),0 10px 28px rgba(42,36,31,.08);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --paper:#18140F; --card:#241E17; --ink:#F2EAE0; --muted:#B3A491;
+      --clay:#D9895A; --clay-deep:#8A4B2C; --clay-soft:#3D2A1E; --clay-soft-text:#F0C8A8;
+      --sage:#94A67E; --sage-soft:#28301F; --sage-soft-text:#B9CBA0;
+      --gold:#E0B563; --gold-soft:#3A3020;
+      --line:#3A3226; --border-soft:#4A4030; --icon-muted:#6B6152;
+      --surface-2:#211B15; --surface-hover:#332A20; --error:#E08767;
+      --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 28px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --paper:#18140F; --card:#241E17; --ink:#F2EAE0; --muted:#B3A491;
+    --clay:#D9895A; --clay-deep:#8A4B2C; --clay-soft:#3D2A1E; --clay-soft-text:#F0C8A8;
+    --sage:#94A67E; --sage-soft:#28301F; --sage-soft-text:#B9CBA0;
+    --gold:#E0B563; --gold-soft:#3A3020;
+    --line:#3A3226; --border-soft:#4A4030; --icon-muted:#6B6152;
+    --surface-2:#211B15; --surface-hover:#332A20; --error:#E08767;
+    --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 28px rgba(0,0,0,.5);
+  }
+  body{transition:background-color .2s, color .2s}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:'Inter',system-ui,sans-serif; background:var(--paper); color:var(--ink);
+    line-height:1.45; padding-bottom:50px; max-width:640px; margin:0 auto; -webkit-font-smoothing:antialiased}
+  .wrap{padding:0 14px}
+  :focus-visible{outline:3px solid var(--gold); outline-offset:2px; border-radius:6px}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+  .dash-header{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin:20px 0 4px; flex-wrap:wrap}
+  .dash-title{font-family:'Fraunces',Georgia,serif; font-weight:900; font-size:clamp(24px,7vw,32px); line-height:1.05}
+  .dash-title em{font-style:italic; color:var(--clay)}
+  .dash-sub{color:var(--muted); font-size:13.5px; margin-top:4px}
+  .dash-actions{display:flex; align-items:center; gap:10px; flex-shrink:0}
+  .dash-back{font:inherit; font-size:13px; font-weight:600; color:var(--clay); text-decoration:none;
+    border:1px solid var(--line); background:var(--card); border-radius:99px; padding:9px 15px; white-space:nowrap}
+  .dash-theme{width:38px; height:38px; border-radius:50%; border:1px solid var(--line); background:var(--card);
+    font-size:16px; cursor:pointer; display:grid; place-items:center; flex-shrink:0}
+
+  .chartcard{background:var(--card); border:1px solid var(--line); border-radius:16px; margin-top:14px; padding:16px; box-shadow:var(--shadow)}
+  .chartcard h3{font-family:'Fraunces',serif; font-size:17px; font-weight:600; margin-bottom:2px}
+  .chartcard .hint{font-size:12px; color:var(--muted); margin:3px 0 14px}
+  .chart-empty{font-size:12.5px; color:var(--muted); padding:20px 0; text-align:center}
+  .chart-svg{width:100%; height:auto; display:block; font-family:'Inter',system-ui,sans-serif}
+  .chart-svg text{fill:var(--muted)}
+  .chart-svg .cx-grid{stroke:var(--line); stroke-width:1}
+  .chart-svg .cx-axis{stroke:var(--border-soft); stroke-width:1}
+  .chart-svg .cx-line{fill:none; stroke:var(--ink); stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
+  .chart-svg .cx-dot{stroke:var(--card); stroke-width:2}
+  .chart-svg .cx-label{font-size:11px; font-weight:600; fill:var(--ink)}
+  .chart-legend{display:flex; gap:16px; flex-wrap:wrap; margin-top:10px; font-size:12px; color:var(--muted)}
+  .chart-legend .sw{display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:5px; vertical-align:-1px}
+
+  .chart-grid{display:grid; grid-template-columns:1fr; gap:14px; margin-top:14px; align-items:start}
+  .chart-grid .chartcard{margin-top:0}
+  .stat-grid{display:grid; grid-template-columns:1fr; gap:14px; margin-top:14px}
+  .stat-grid .chartcard{margin-top:0; text-align:center}
+
+  .donut-wrap{position:relative; width:118px; height:118px; margin:6px auto 4px}
+  .donut-center{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0 10px}
+  .donut-center b{font-family:'Fraunces',serif; font-weight:900; font-size:25px; line-height:1; color:var(--ink)}
+  .donut-center span{font-size:10px; color:var(--muted); margin-top:3px; text-align:center; line-height:1.25}
+
+  .badge-list{list-style:none; display:flex; flex-direction:column; gap:2px; margin-top:8px}
+  .badge-row{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 0; border-bottom:1px solid var(--border-soft); font-size:13.5px}
+  .badge-row:last-child{border-bottom:none}
+  .badge-room{display:flex; align-items:center; gap:8px; min-width:0}
+  .badge-room span.emoji{flex-shrink:0}
+  .badge-num{background:var(--gold-soft); color:var(--clay-deep); font-weight:700; font-size:12px; border-radius:99px; padding:3px 11px; min-width:28px; text-align:center; flex-shrink:0}
+  .badge-num.zero{background:var(--sage-soft); color:var(--sage-soft-text)}
+
+  .proom-row{padding:9px 0}
+  .proom-top{display:flex; justify-content:space-between; align-items:baseline; font-size:13px; margin-bottom:5px; gap:8px}
+  .proom-top b{font-weight:600}
+  .proom-top span{color:var(--muted); font-size:11.5px; flex-shrink:0}
+  .proom-track{height:8px; background:var(--surface-2); border-radius:99px; overflow:hidden}
+  .proom-fill{height:100%; border-radius:99px; background:var(--sage)}
+
+  .activity-list{list-style:none; margin:8px 0 0; padding:0; display:flex; flex-direction:column; gap:2px}
+  .activity-item{display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding:8px 0; border-bottom:1px solid var(--border-soft)}
+  .activity-item:last-child{border-bottom:none}
+  .activity-text{font-size:13.5px; color:var(--ink)}
+  .activity-when{font-size:11.5px; color:var(--muted); white-space:nowrap; flex-shrink:0}
+  .activity-empty{font-size:12.5px; color:var(--muted); padding:12px 0; text-align:center; list-style:none}
+
+  .empty-state{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:34px 22px; text-align:center; margin-top:20px; box-shadow:var(--shadow)}
+  .empty-state h2{font-family:'Fraunces',serif; font-size:20px; margin-bottom:8px}
+  .empty-state p{color:var(--muted); font-size:13.5px; max-width:38ch; margin:0 auto 18px}
+  .empty-state a.btn-primary{display:inline-block; font:inherit; font-size:14px; font-weight:600; color:#fff; background:var(--clay);
+    text-decoration:none; border-radius:12px; padding:12px 22px}
+
+  footer.credits{text-align:center; font-size:12px; color:var(--muted); margin-top:26px; padding:0 14px}
+
+  @media (min-width:760px){
+    body{max-width:900px}
+    .wrap{padding:0 28px}
+    .chart-grid{grid-template-columns:1fr 1fr}
+    .stat-grid{grid-template-columns:repeat(3,1fr)}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="dash-header">
+    <div>
+      <div class="dash-title">📊 Painel <em>geral</em></div>
+      <div class="dash-sub">Um resumo visual de tudo — Argeu &amp; Mayara</div>
+    </div>
+    <div class="dash-actions">
+      <button class="dash-theme" id="theme-toggle" aria-label="Alternar modo claro/escuro" title="Alternar modo claro/escuro">🌙</button>
+      <a class="dash-back" href="index.html">← Voltar pro checklist</a>
+    </div>
+  </div>
+
+  <div id="dash-empty" hidden class="empty-state">
+    <h2>Ainda não há dados por aqui</h2>
+    <p>Esse painel mostra um resumo do que já foi preenchido no checklist. Abra o checklist primeiro pra começar a registrar itens, orçamento e depósitos.</p>
+    <a class="btn-primary" href="index.html">Abrir o checklist</a>
+  </div>
+
+  <div id="dash-content" hidden>
+
+    <div class="stat-grid">
+      <div class="chartcard">
+        <h3>Checklist concluído</h3>
+        <div id="donut-pct"></div>
+      </div>
+      <div class="chartcard">
+        <h3>Quem guardou mais</h3>
+        <div id="donut-who"></div>
+      </div>
+      <div class="chartcard">
+        <h3>Estimado × comprado × guardado</h3>
+        <p class="hint">Os três totais lado a lado.</p>
+        <div id="chart-progress"></div>
+      </div>
+    </div>
+
+    <div class="chartcard">
+      <h3>Evolução dos depósitos</h3>
+      <p class="hint">Cada depósito, quando foi e quanto já dá de total acumulado (os dois juntos).</p>
+      <div id="chart-deposits"></div>
+    </div>
+
+    <div class="chart-grid">
+      <div class="chartcard">
+        <h3>Itens por cômodo</h3>
+        <p class="hint">Quantos itens ainda faltam em cada cômodo.</p>
+        <ul class="badge-list" id="badge-list"></ul>
+      </div>
+      <div class="chartcard">
+        <h3>Progresso por cômodo</h3>
+        <p class="hint">% de itens já comprados em cada cômodo.</p>
+        <div id="proom-list"></div>
+      </div>
+    </div>
+
+    <div class="chartcard">
+      <h3>Guardado por mês</h3>
+      <p class="hint">Total guardado em cada mês, com a parte de cada um empilhada na mesma barra.</p>
+      <div id="chart-monthly"></div>
+    </div>
+
+    <div class="chartcard">
+      <h3>Atividade recente</h3>
+      <ul class="activity-list" id="activity-list"></ul>
+    </div>
+
+  </div>
+
+  <footer class="credits">Painel gerado a partir dos dados salvos neste navegador — mesmos dados do <a href="index.html" style="color:var(--clay)">checklist</a>.</footer>
+
+</div>
+
+<script>
+/* ================= TEMA (mesma lógica do index.html) ================= */
+const THEME_KEY = 'argeu-mayara-theme';
+function currentEffectiveTheme(){
+  const explicit = document.documentElement.dataset.theme;
+  if(explicit) return explicit;
+  return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+}
+function updateThemeToggleIcon(){
+  const btn = document.getElementById('theme-toggle');
+  if(!btn) return;
+  btn.textContent = currentEffectiveTheme()==='dark' ? '☀️' : '🌙';
+}
+function applyTheme(t){
+  if(t==='dark' || t==='light') document.documentElement.dataset.theme = t;
+  else delete document.documentElement.dataset.theme;
+  updateThemeToggleIcon();
+}
+function initTheme(){
+  let saved = null;
+  try{ saved = localStorage.getItem(THEME_KEY); }catch(e){}
+  applyTheme(saved);
+}
+document.getElementById('theme-toggle').addEventListener('click', ()=>{
+  const next = currentEffectiveTheme()==='dark' ? 'light' : 'dark';
+  applyTheme(next);
+  try{ localStorage.setItem(THEME_KEY, next); }catch(e){}
+});
+initTheme();
+
+/* ================= DADOS (somente leitura do mesmo localStorage do checklist) ================= */
+const KEY = 'argeu-mayara-checklist-v2';
+const money = n => 'R$ ' + Math.round(n||0).toLocaleString('pt-BR');
+const eff = it => (it.real>0 ? it.real : it.est) || 0;
+function escapeHtml(s){ return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function timeAgo(iso){
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const min = Math.floor(diffMs/60000);
+  if(min<1) return 'agora mesmo';
+  if(min<60) return 'há '+min+' min';
+  const h = Math.floor(min/60);
+  if(h<24) return 'há '+h+'h';
+  const d = Math.floor(h/24);
+  return 'há '+d+' dia'+(d>1?'s':'');
+}
+
+let model = null;
+try{
+  const raw = localStorage.getItem(KEY);
+  model = raw ? JSON.parse(raw) : null;
+}catch(e){ model = null; }
+
+const hasData = model && Array.isArray(model.groups) && model.groups.length>0;
+document.getElementById('dash-empty').hidden = hasData;
+document.getElementById('dash-content').hidden = !hasData;
+
+if(hasData){
+  if(!model.nameA) model.nameA = 'Argeu';
+  if(!model.nameP) model.nameP = 'Mayara';
+  if(!Array.isArray(model.deposits)) model.deposits = [];
+  if(!Array.isArray(model.activity)) model.activity = [];
+
+  const CHART_COLORS = { A:'#B5673F', P:'#0A9696', other:'#4B4FC4' };
+
+  function svgDonut(frac, colorTrack, colorValue, ariaLabel){
+    const size=118, thickness=14, r=(size-thickness)/2, cx=size/2, cy=size/2;
+    const circ = 2*Math.PI*r;
+    const dash = Math.max(0, Math.min(1, frac)) * circ;
+    return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" role="img" aria-label="${escapeHtml(ariaLabel)}">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${colorTrack}" stroke-width="${thickness}"/>
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${colorValue}" stroke-width="${thickness}" stroke-linecap="round"
+        stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}" transform="rotate(-90 ${cx} ${cy})"/>
+    </svg>`;
+  }
+
+  function svgBarChart(bars, ariaLabel){
+    const maxV = Math.max(...bars.map(b=>b.value), 1);
+    const W=300, H=200, padB=30, padT=26, plotH = H-padB-padT;
+    const n = bars.length, gapRatio = 0.45, fillRatio = 0.75;
+    const barW = Math.min(90, Math.max(40, (W*fillRatio) / (n + (n-1)*gapRatio)));
+    const gap = barW*gapRatio;
+    const totalW = n*barW + (n-1)*gap;
+    const startX = (W-totalW)/2;
+    const barsHtml = bars.map((b,i)=>{
+      const h = Math.max((b.value/maxV)*plotH, 2);
+      const bx = startX + i*(barW+gap);
+      const by = padT + plotH - h;
+      return `<rect class="cx-bar" x="${bx.toFixed(1)}" y="${by.toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" rx="4" fill="${b.color}"><title>${escapeHtml(b.label)}: ${money(b.value)}</title></rect>
+        <text class="cx-label" x="${(bx+barW/2).toFixed(1)}" y="${(by-8).toFixed(1)}" text-anchor="middle">${money(b.value)}</text>
+        <text x="${(bx+barW/2).toFixed(1)}" y="${H-8}" text-anchor="middle" font-size="11">${escapeHtml(b.label)}</text>`;
+    }).join('');
+    return `<svg class="chart-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="${escapeHtml(ariaLabel)}">
+      <line class="cx-axis" x1="10" y1="${(padT+plotH).toFixed(1)}" x2="${W-10}" y2="${(padT+plotH).toFixed(1)}"/>
+      ${barsHtml}
+    </svg>`;
+  }
+
+  const cssVar = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+  // ---- Checklist % concluído (donut) ----
+  const all = model.groups.flatMap(g=>g.items);
+  const done = all.filter(i=>i.checked).length, total = all.length;
+  const pct = total ? Math.round(done/total*100) : 0;
+  document.getElementById('donut-pct').innerHTML = `
+    <div class="donut-wrap">
+      ${svgDonut(pct/100, cssVar('--line'), cssVar('--clay'), 'Checklist '+pct+'% concluído')}
+      <div class="donut-center"><b>${pct}%</b><span>${done} de ${total} itens</span></div>
+    </div>`;
+
+  // ---- Quem guardou mais (donut de 2 cores) ----
+  const depA = model.deposits.filter(d=>d.who==='A').reduce((s,d)=>s+(d.amount||0),0);
+  const depP = model.deposits.filter(d=>d.who==='P').reduce((s,d)=>s+(d.amount||0),0);
+  const depTotal = depA+depP;
+  if(depTotal>0){
+    const fracA = depA/depTotal;
+    document.getElementById('donut-who').innerHTML = `
+      <div class="donut-wrap">
+        ${svgDonut(fracA, CHART_COLORS.P, CHART_COLORS.A, 'Comparativo de quanto cada um guardou')}
+        <div class="donut-center"><b>${Math.round(fracA*100)}%</b><span>${escapeHtml(model.nameA)}</span></div>
+      </div>
+      <div class="chart-legend" style="justify-content:center">
+        <span><span class="sw" style="background:${CHART_COLORS.A}"></span>${escapeHtml(model.nameA)} (${money(depA)})</span>
+        <span><span class="sw" style="background:${CHART_COLORS.P}"></span>${escapeHtml(model.nameP)} (${money(depP)})</span>
+      </div>`;
+  } else {
+    document.getElementById('donut-who').innerHTML = '<p class="chart-empty">Nenhum depósito registrado ainda.</p>';
+  }
+
+  // ---- Estimado × comprado × guardado ----
+  const est = all.reduce((s,i)=>s+(i.est||0),0);
+  const buy = all.filter(i=>i.checked).reduce((s,i)=>s+eff(i),0);
+  const cap = model.deposits.reduce((s,d)=>s+(d.amount||0),0);
+  if(est===0 && buy===0 && cap===0){
+    document.getElementById('chart-progress').innerHTML = '<p class="chart-empty">Sem dados ainda pra comparar.</p>';
+  } else {
+    document.getElementById('chart-progress').innerHTML = svgBarChart([
+      { label:'Estimado', value:est, color:CHART_COLORS.A },
+      { label:'Comprado', value:buy, color:CHART_COLORS.P },
+      { label:'Guardado', value:cap, color:CHART_COLORS.other }
+    ], 'Comparação entre estimado, comprado e guardado');
+  }
+
+  // ---- Evolução dos depósitos (linha acumulada) ----
+  const depsEl = document.getElementById('chart-deposits');
+  if(!model.deposits.length){
+    depsEl.innerHTML = '<p class="chart-empty">Nenhum depósito registrado ainda.</p>';
+  } else {
+    let running = 0;
+    const points = model.deposits.map(d=>{ running += (d.amount||0); return { who:d.who, amount:d.amount, when:d.when||d.note||'', cum: running }; });
+    const maxV = Math.max(running, 1);
+    const W=600, H=220, padL=58, padR=14, padT=16, padB=16;
+    const plotW = W-padL-padR, plotH = H-padT-padB;
+    const x = i => padL + (points.length===1 ? plotW/2 : (i/(points.length-1))*plotW);
+    const y = v => padT + plotH - (v/maxV)*plotH;
+    const colorFor = who => CHART_COLORS[who] || CHART_COLORS.other;
+    const gridLines = [0,0.5,1].map(f=>{
+      const v = maxV*f, yy = y(v);
+      return `<line class="cx-grid" x1="${padL}" y1="${yy.toFixed(1)}" x2="${W-padR}" y2="${yy.toFixed(1)}"/><text x="${padL-8}" y="${(yy+4).toFixed(1)}" text-anchor="end" font-size="10">${money(v)}</text>`;
+    }).join('');
+    const whoLabel = who => who==='A' ? model.nameA : who==='P' ? model.nameP : 'Inicial';
+    const linePath = points.map((p,i)=> (i===0?'M':'L') + x(i).toFixed(1) + ',' + y(p.cum).toFixed(1)).join(' ');
+    const dots = points.map((p,i)=>`<circle class="cx-dot" cx="${x(i).toFixed(1)}" cy="${y(p.cum).toFixed(1)}" r="5" fill="${colorFor(p.who)}"><title>${escapeHtml(whoLabel(p.who))} — ${money(p.amount)} em ${escapeHtml(p.when)} (total até então: ${money(p.cum)})</title></circle>`).join('');
+    depsEl.innerHTML = `
+      <svg class="chart-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Evolução acumulada dos depósitos, ${points.length} depósitos, total ${money(running)}">
+        ${gridLines}
+        <line class="cx-axis" x1="${padL}" y1="${(padT+plotH).toFixed(1)}" x2="${W-padR}" y2="${(padT+plotH).toFixed(1)}"/>
+        <path class="cx-line" d="${linePath}"/>
+        ${dots}
+      </svg>
+      <div class="chart-legend">
+        <span><span class="sw" style="background:${CHART_COLORS.A}"></span>${escapeHtml(model.nameA)}</span>
+        <span><span class="sw" style="background:${CHART_COLORS.P}"></span>${escapeHtml(model.nameP)}</span>
+      </div>`;
+  }
+
+  // ---- Itens por cômodo (badges) + Progresso por cômodo (barras) ----
+  const roomStats = model.groups.map(gr => {
+    const t = gr.items.length, d = gr.items.filter(i=>i.checked).length;
+    return { g:gr.g, emoji:gr.emoji, total:t, done:d, left:t-d, pct: t ? Math.round(d/t*100) : 0 };
+  });
+  document.getElementById('badge-list').innerHTML = roomStats.map(r => `
+    <li class="badge-row">
+      <span class="badge-room"><span class="emoji">${r.emoji||'📦'}</span>${escapeHtml(r.g)}</span>
+      <span class="badge-num${r.left===0?' zero':''}">${r.left===0?'✓':r.left}</span>
+    </li>`).join('') || '<li class="badge-row">Nenhum cômodo ainda.</li>';
+  document.getElementById('proom-list').innerHTML = roomStats.map(r => `
+    <div class="proom-row">
+      <div class="proom-top"><b>${r.emoji||'📦'} ${escapeHtml(r.g)}</b><span>${r.done}/${r.total} · ${r.pct}%</span></div>
+      <div class="proom-track"><div class="proom-fill" style="width:${r.pct}%"></div></div>
+    </div>`).join('') || '<p class="chart-empty">Nenhum cômodo ainda.</p>';
+
+  // ---- Guardado por mês (barras empilhadas) ----
+  const MONTH_ABBR = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  const monthlyEl = document.getElementById('chart-monthly');
+  const byMonth = {};
+  model.deposits.forEach(d=>{
+    if(!d.when) return;
+    const parts = d.when.split('/');
+    if(parts.length!==3) return;
+    const mm = +parts[1], yyyy = +parts[2];
+    if(!mm || !yyyy) return;
+    const key = yyyy+'-'+mm;
+    if(!byMonth[key]) byMonth[key] = { mm, yyyy, A:0, P:0 };
+    if(d.who==='A') byMonth[key].A += (d.amount||0);
+    else if(d.who==='P') byMonth[key].P += (d.amount||0);
+  });
+  const months = Object.values(byMonth).sort((a,b)=> a.yyyy-b.yyyy || a.mm-b.mm);
+  if(!months.length){
+    monthlyEl.innerHTML = '<p class="chart-empty">Nenhum depósito com data registrada ainda.</p>';
+  } else {
+    const maxV = Math.max(...months.map(m=>m.A+m.P), 1);
+    const barW=40, gap=26, padL=50, padR=14, padT=26, padB=30, H=220;
+    const plotH = H-padT-padB;
+    const totalW = months.length*barW + Math.max(0,months.length-1)*gap;
+    const W = padL+padR+totalW;
+    const baseY = padT+plotH;
+    const bars = months.map((m,i)=>{
+      const bx = padL + i*(barW+gap);
+      const aH = (m.A/maxV)*plotH;
+      const pH = (m.P/maxV)*plotH;
+      const gapSeg = (m.A>0 && m.P>0) ? 2 : 0;
+      const pY = baseY - pH;
+      const aY = pY - gapSeg - aH;
+      let segs = '';
+      if(m.P>0) segs += `<rect class="cx-bar" x="${bx.toFixed(1)}" y="${pY.toFixed(1)}" width="${barW}" height="${pH.toFixed(1)}" rx="4" fill="${CHART_COLORS.P}"><title>${escapeHtml(model.nameP)}: ${money(m.P)}</title></rect>`;
+      if(m.A>0) segs += `<rect class="cx-bar" x="${bx.toFixed(1)}" y="${aY.toFixed(1)}" width="${barW}" height="${aH.toFixed(1)}" rx="4" fill="${CHART_COLORS.A}"><title>${escapeHtml(model.nameA)}: ${money(m.A)}</title></rect>`;
+      const topY = m.A>0 ? aY : (m.P>0 ? pY : baseY);
+      const label = `<text class="cx-label" x="${(bx+barW/2).toFixed(1)}" y="${(topY-8).toFixed(1)}" text-anchor="middle">${money(m.A+m.P)}</text>`;
+      const monthLabel = `<text x="${(bx+barW/2).toFixed(1)}" y="${H-8}" text-anchor="middle" font-size="11">${MONTH_ABBR[m.mm-1]}/${String(m.yyyy).slice(2)}</text>`;
+      return segs+label+monthLabel;
+    }).join('');
+    monthlyEl.innerHTML = `<div style="overflow-x:auto"><svg class="chart-svg" style="min-width:${Math.max(W,300)}px" viewBox="0 0 ${Math.max(W,300)} ${H}" role="img" aria-label="Quanto foi guardado por mês, total e individual de cada um">
+      <line class="cx-axis" x1="${padL}" y1="${baseY.toFixed(1)}" x2="${W-padR}" y2="${baseY.toFixed(1)}"/>
+      ${bars}
+    </svg></div>
+    <div class="chart-legend">
+      <span><span class="sw" style="background:${CHART_COLORS.A}"></span>${escapeHtml(model.nameA)}</span>
+      <span><span class="sw" style="background:${CHART_COLORS.P}"></span>${escapeHtml(model.nameP)}</span>
+    </div>`;
+  }
+
+  // ---- Atividade recente ----
+  const actEl = document.getElementById('activity-list');
+  actEl.innerHTML = model.activity.length
+    ? model.activity.map(a=>`<li class="activity-item"><span class="activity-text">${escapeHtml(a.text)}</span><span class="activity-when">${timeAgo(a.when)}</span></li>`).join('')
+    : '<li class="activity-empty">Nenhuma atividade ainda.</li>';
+}
+</script>
+</body>
+</html>
