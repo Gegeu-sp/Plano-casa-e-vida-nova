@@ -1112,6 +1112,13 @@ function wire(){
       if(tab==='financeiro') renderCharts();
     });
   });
+
+  // Abre direto numa aba específica se vier de um link tipo index.html#financeiro (ex.: painel geral).
+  const hashTab = (location.hash||'').replace('#','');
+  if(TAB_IDS.includes(hashTab)){
+    const hashBtn = document.querySelector('.tabbtn[data-tab="'+hashTab+'"]');
+    if(hashBtn) hashBtn.click();
+  }
 }
 const item = li => model.groups[+li.dataset.g].items[+li.dataset.i];
 

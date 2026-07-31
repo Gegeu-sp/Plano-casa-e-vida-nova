@@ -46,22 +46,37 @@
   *{box-sizing:border-box;margin:0;padding:0}
   html{-webkit-text-size-adjust:100%}
   body{font-family:'Inter',system-ui,sans-serif; background:var(--paper); color:var(--ink);
-    line-height:1.45; padding-bottom:50px; max-width:640px; margin:0 auto; -webkit-font-smoothing:antialiased}
-  .wrap{padding:0 14px}
+    line-height:1.45; -webkit-font-smoothing:antialiased}
   :focus-visible{outline:3px solid var(--gold); outline-offset:2px; border-radius:6px}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
-  .dash-header{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin:20px 0 4px; flex-wrap:wrap}
-  .dash-title{font-family:'Fraunces',Georgia,serif; font-weight:900; font-size:clamp(24px,7vw,32px); line-height:1.05}
-  .dash-title em{font-style:italic; color:var(--clay)}
-  .dash-sub{color:var(--muted); font-size:13.5px; margin-top:4px}
-  .dash-actions{display:flex; align-items:center; gap:10px; flex-shrink:0}
-  .dash-back{font:inherit; font-size:13px; font-weight:600; color:var(--clay); text-decoration:none;
-    border:1px solid var(--line); background:var(--card); border-radius:99px; padding:9px 15px; white-space:nowrap}
-  .dash-theme{width:38px; height:38px; border-radius:50%; border:1px solid var(--line); background:var(--card);
-    font-size:16px; cursor:pointer; display:grid; place-items:center; flex-shrink:0}
+  /* ---- Casca: barra lateral (sempre escura, marca fixa) + conteúdo ---- */
+  .dash-shell{display:flex; flex-direction:column; min-height:100vh}
+  .sidebar{background:#241D16; color:#F1E6C8; display:flex; align-items:center; gap:12px;
+    padding:10px 14px; overflow-x:auto; flex-shrink:0}
+  .sb-brand{display:flex; align-items:center; gap:8px; flex-shrink:0}
+  .sb-logo{width:28px; height:28px; border-radius:8px; display:block}
+  .sb-brand-text{display:none; font-family:'Fraunces',serif; font-weight:700; font-size:15px; line-height:1.2; white-space:nowrap}
+  .sb-brand-text b{color:#D9895A}
+  .sb-nav{display:flex; gap:6px; flex-shrink:0}
+  .sb-nav a{display:flex; align-items:center; gap:6px; padding:8px 13px; border-radius:99px;
+    color:#D8CBBA; text-decoration:none; font-size:12.5px; font-weight:600; white-space:nowrap}
+  .sb-nav a:hover{background:rgba(255,255,255,.08)}
+  .sb-nav a.on{background:#B5673F; color:#fff}
+  .sb-theme{margin-left:auto; flex-shrink:0; display:flex; align-items:center; gap:8px; background:none;
+    border:1px solid rgba(255,255,255,.18); color:#D8CBBA; border-radius:99px; padding:8px 11px;
+    font:inherit; font-size:13px; cursor:pointer}
+  .sb-theme:hover{background:rgba(255,255,255,.08)}
+  .sb-theme span{display:none}
 
-  .chartcard{background:var(--card); border:1px solid var(--line); border-radius:16px; margin-top:14px; padding:16px; box-shadow:var(--shadow)}
+  .main{flex:1; min-width:0; padding-bottom:50px}
+  .wrap{padding:0 14px; max-width:1100px; margin:0 auto}
+
+  .dash-title{font-family:'Fraunces',Georgia,serif; font-weight:900; font-size:clamp(24px,7vw,32px); line-height:1.05; margin:20px 0 2px}
+  .dash-title em{font-style:italic; color:var(--clay)}
+  .dash-sub{color:var(--muted); font-size:13.5px; margin-bottom:4px}
+
+  .chartcard{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px; box-shadow:var(--shadow)}
   .chartcard h3{font-family:'Fraunces',serif; font-size:17px; font-weight:600; margin-bottom:2px}
   .chartcard .hint{font-size:12px; color:var(--muted); margin:3px 0 14px}
   .chart-empty{font-size:12.5px; color:var(--muted); padding:20px 0; text-align:center}
@@ -75,15 +90,23 @@
   .chart-legend{display:flex; gap:16px; flex-wrap:wrap; margin-top:10px; font-size:12px; color:var(--muted)}
   .chart-legend .sw{display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:5px; vertical-align:-1px}
 
-  .chart-grid{display:grid; grid-template-columns:1fr; gap:14px; margin-top:14px; align-items:start}
-  .chart-grid .chartcard{margin-top:0}
-  .stat-grid{display:grid; grid-template-columns:1fr; gap:14px; margin-top:14px}
-  .stat-grid .chartcard{margin-top:0; text-align:center}
+  /* ---- Grid assimétrico (mobile: pilha única na ordem do mockup) ---- */
+  .dash-grid{display:flex; flex-direction:column; gap:14px; margin-top:14px}
+  #dash-content[hidden]{display:none}
+  .dash-left{display:flex; flex-direction:column; gap:14px}
+  .dash-stats{display:grid; grid-template-columns:1fr; gap:14px}
+  .dash-stats .chartcard{text-align:center}
+  .dash-side{display:flex; flex-direction:column; gap:14px}
+  .dash-bottom{display:grid; grid-template-columns:1fr; gap:14px}
 
   .donut-wrap{position:relative; width:118px; height:118px; margin:6px auto 4px}
+  .donut-wrap.inline{margin:0; flex-shrink:0}
   .donut-center{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0 10px}
   .donut-center b{font-family:'Fraunces',serif; font-weight:900; font-size:25px; line-height:1; color:var(--ink)}
   .donut-center span{font-size:10px; color:var(--muted); margin-top:3px; text-align:center; line-height:1.25}
+  .donut-close{display:flex; align-items:center; gap:16px; margin-top:8px}
+  .donut-close p{font-size:12.5px; color:var(--muted); line-height:1.5}
+  .donut-close b{color:var(--ink)}
 
   .badge-list{list-style:none; display:flex; flex-direction:column; gap:2px; margin-top:8px}
   .badge-row{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 0; border-bottom:1px solid var(--border-soft); font-size:13.5px}
@@ -116,84 +139,117 @@
   footer.credits{text-align:center; font-size:12px; color:var(--muted); margin-top:26px; padding:0 14px}
 
   @media (min-width:760px){
-    body{max-width:900px}
+    .dash-shell{flex-direction:row}
+    .sidebar{flex-direction:column; align-items:stretch; width:220px; height:100vh; position:sticky; top:0;
+      padding:22px 16px; overflow-x:visible; gap:26px}
+    .sb-brand-text{display:block}
+    .sb-nav{flex-direction:column; gap:4px}
+    .sb-nav a{border-radius:10px; padding:10px 12px; font-size:14px}
+    .sb-theme{margin-left:0; margin-top:auto; border-radius:10px; padding:10px 12px}
+    .sb-theme span{display:inline}
+
     .wrap{padding:0 28px}
-    .chart-grid{grid-template-columns:1fr 1fr}
-    .stat-grid{grid-template-columns:repeat(3,1fr)}
+    .dash-grid{
+      display:grid; grid-template-columns:2fr 1fr; align-items:start;
+      grid-template-areas:"left side" "bottom bottom";
+    }
+    .dash-left{grid-area:left}
+    .dash-stats{grid-template-columns:repeat(3,1fr)}
+    .dash-side{grid-area:side}
+    .dash-bottom{grid-area:bottom; grid-template-columns:1fr 1fr}
   }
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="dash-shell">
 
-  <div class="dash-header">
-    <div>
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <img class="sb-logo" src="assets/icon-192.png" alt="">
+      <div class="sb-brand-text">Argeu <b>&amp;</b> Mayara</div>
+    </div>
+    <nav class="sb-nav">
+      <a href="index.html">📋 <span>Checklist</span></a>
+      <a href="index.html#financeiro">💰 <span>Financeiro</span></a>
+      <a href="index.html#acordo">📝 <span>Acordo</span></a>
+      <a href="dashboard.html" class="on">📊 <span>Painel</span></a>
+    </nav>
+    <button class="sb-theme" id="theme-toggle" aria-label="Alternar modo claro/escuro" title="Alternar modo claro/escuro">🌙 <span>Tema</span></button>
+  </aside>
+
+  <div class="main">
+    <div class="wrap">
+
       <div class="dash-title">📊 Painel <em>geral</em></div>
       <div class="dash-sub">Um resumo visual de tudo — Argeu &amp; Mayara</div>
-    </div>
-    <div class="dash-actions">
-      <button class="dash-theme" id="theme-toggle" aria-label="Alternar modo claro/escuro" title="Alternar modo claro/escuro">🌙</button>
-      <a class="dash-back" href="index.html">← Voltar pro checklist</a>
+
+      <div id="dash-empty" hidden class="empty-state">
+        <h2>Ainda não há dados por aqui</h2>
+        <p>Esse painel mostra um resumo do que já foi preenchido no checklist. Abra o checklist primeiro pra começar a registrar itens, orçamento e depósitos.</p>
+        <a class="btn-primary" href="index.html">Abrir o checklist</a>
+      </div>
+
+      <div id="dash-content" class="dash-grid" hidden>
+
+        <div class="dash-left">
+          <div class="chartcard dash-hero">
+            <h3>Evolução dos depósitos</h3>
+            <p class="hint">Cada depósito, quando foi e quanto já dá de total acumulado (os dois juntos).</p>
+            <div id="chart-deposits"></div>
+          </div>
+
+          <div class="dash-stats">
+            <div class="chartcard">
+              <h3>Checklist concluído</h3>
+              <div id="donut-pct"></div>
+            </div>
+            <div class="chartcard">
+              <h3>Quem guardou mais</h3>
+              <div id="donut-who"></div>
+            </div>
+            <div class="chartcard">
+              <h3>Estimado × comprado × guardado</h3>
+              <p class="hint">Os três totais lado a lado.</p>
+              <div id="chart-progress"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dash-side">
+          <div class="chartcard">
+            <h3>Itens por cômodo</h3>
+            <p class="hint">Quantos itens ainda faltam em cada cômodo.</p>
+            <ul class="badge-list" id="badge-list"></ul>
+          </div>
+          <div class="chartcard">
+            <h3>Guardado por mês</h3>
+            <p class="hint">Total por mês, com a parte de cada um empilhada.</p>
+            <div id="chart-monthly"></div>
+          </div>
+          <div class="chartcard">
+            <h3>Guardado até agora</h3>
+            <div id="donut-close"></div>
+          </div>
+        </div>
+
+        <div class="dash-bottom">
+          <div class="chartcard">
+            <h3>Progresso por cômodo</h3>
+            <p class="hint">% de itens já comprados em cada cômodo.</p>
+            <div id="proom-list"></div>
+          </div>
+          <div class="chartcard">
+            <h3>Atividade recente</h3>
+            <ul class="activity-list" id="activity-list"></ul>
+          </div>
+        </div>
+
+      </div>
+
+      <footer class="credits">Painel gerado a partir dos dados salvos neste navegador — mesmos dados do <a href="index.html" style="color:var(--clay)">checklist</a>.</footer>
+
     </div>
   </div>
-
-  <div id="dash-empty" hidden class="empty-state">
-    <h2>Ainda não há dados por aqui</h2>
-    <p>Esse painel mostra um resumo do que já foi preenchido no checklist. Abra o checklist primeiro pra começar a registrar itens, orçamento e depósitos.</p>
-    <a class="btn-primary" href="index.html">Abrir o checklist</a>
-  </div>
-
-  <div id="dash-content" hidden>
-
-    <div class="stat-grid">
-      <div class="chartcard">
-        <h3>Checklist concluído</h3>
-        <div id="donut-pct"></div>
-      </div>
-      <div class="chartcard">
-        <h3>Quem guardou mais</h3>
-        <div id="donut-who"></div>
-      </div>
-      <div class="chartcard">
-        <h3>Estimado × comprado × guardado</h3>
-        <p class="hint">Os três totais lado a lado.</p>
-        <div id="chart-progress"></div>
-      </div>
-    </div>
-
-    <div class="chartcard">
-      <h3>Evolução dos depósitos</h3>
-      <p class="hint">Cada depósito, quando foi e quanto já dá de total acumulado (os dois juntos).</p>
-      <div id="chart-deposits"></div>
-    </div>
-
-    <div class="chart-grid">
-      <div class="chartcard">
-        <h3>Itens por cômodo</h3>
-        <p class="hint">Quantos itens ainda faltam em cada cômodo.</p>
-        <ul class="badge-list" id="badge-list"></ul>
-      </div>
-      <div class="chartcard">
-        <h3>Progresso por cômodo</h3>
-        <p class="hint">% de itens já comprados em cada cômodo.</p>
-        <div id="proom-list"></div>
-      </div>
-    </div>
-
-    <div class="chartcard">
-      <h3>Guardado por mês</h3>
-      <p class="hint">Total guardado em cada mês, com a parte de cada um empilhada na mesma barra.</p>
-      <div id="chart-monthly"></div>
-    </div>
-
-    <div class="chartcard">
-      <h3>Atividade recente</h3>
-      <ul class="activity-list" id="activity-list"></ul>
-    </div>
-
-  </div>
-
-  <footer class="credits">Painel gerado a partir dos dados salvos neste navegador — mesmos dados do <a href="index.html" style="color:var(--clay)">checklist</a>.</footer>
 
 </div>
 
@@ -208,7 +264,10 @@ function currentEffectiveTheme(){
 function updateThemeToggleIcon(){
   const btn = document.getElementById('theme-toggle');
   if(!btn) return;
-  btn.textContent = currentEffectiveTheme()==='dark' ? '☀️' : '🌙';
+  const icon = currentEffectiveTheme()==='dark' ? '☀️' : '🌙';
+  const label = btn.querySelector('span');
+  if(label) btn.firstChild.textContent = icon+' ';
+  else btn.textContent = icon;
 }
 function applyTheme(t){
   if(t==='dark' || t==='light') document.documentElement.dataset.theme = t;
@@ -226,6 +285,7 @@ document.getElementById('theme-toggle').addEventListener('click', ()=>{
   try{ localStorage.setItem(THEME_KEY, next); }catch(e){}
 });
 initTheme();
+document.querySelector('.sb-nav a.on')?.scrollIntoView({inline:'center', block:'nearest'});
 
 /* ================= DADOS (somente leitura do mesmo localStorage do checklist) ================= */
 const KEY = 'argeu-mayara-checklist-v2';
@@ -337,6 +397,23 @@ if(hasData){
       { label:'Comprado', value:buy, color:CHART_COLORS.P },
       { label:'Guardado', value:cap, color:CHART_COLORS.other }
     ], 'Comparação entre estimado, comprado e guardado');
+  }
+
+  // ---- Guardado até agora (donut de fechamento: guardado ÷ estimado) ----
+  const closeEl = document.getElementById('donut-close');
+  if(est>0){
+    const fracCap = cap/est;
+    const falta = Math.max(0, est-cap);
+    closeEl.innerHTML = `
+      <div class="donut-close">
+        <div class="donut-wrap inline">
+          ${svgDonut(fracCap, cssVar('--line'), cssVar('--sage'), 'Guardado '+Math.round(fracCap*100)+'% do estimado')}
+          <div class="donut-center"><b>${Math.round(fracCap*100)}%</b></div>
+        </div>
+        <p>Já guardaram <b>${money(cap)}</b> de um total estimado de <b>${money(est)}</b>${falta>0 ? ' — faltam '+money(falta)+'.' : ' — já dá pra cobrir tudo! 🎉'}</p>
+      </div>`;
+  } else {
+    closeEl.innerHTML = '<p class="chart-empty">Defina os valores estimados no checklist pra ver esse cálculo.</p>';
   }
 
   // ---- Evolução dos depósitos (linha acumulada) ----
