@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Argeu &amp; Mayara — Nossa Casa, Nossa Vida Nova</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="assets/icon-192.png">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<meta name="theme-color" content="#B5673F">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -48,6 +52,8 @@
   body{font-family:'Inter',system-ui,sans-serif; background:var(--paper); color:var(--ink);
     line-height:1.45; padding-bottom:70px; max-width:640px; margin:0 auto; -webkit-font-smoothing:antialiased}
   .wrap{padding:0 14px}
+  .chart-grid{display:grid; grid-template-columns:1fr; gap:14px; margin-top:14px}
+  .chart-grid .chartcard{margin-top:0}
   .eyebrow{font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--clay); font-weight:600}
   h1{font-family:'Fraunces',Georgia,serif; font-weight:900; font-size:clamp(28px,8vw,40px); line-height:1.02; letter-spacing:-.01em; margin:6px 0 4px}
   h1 em{font-style:italic; color:var(--clay)}
@@ -113,7 +119,7 @@
   .dep-item{display:flex; align-items:center; gap:8px; padding:8px 0; border-top:1px solid var(--line); font-size:13.5px}
   .dep-item .dep-who{font-weight:700; color:var(--clay); min-width:64px}
   .dep-item .dep-when{color:var(--muted); font-size:11.5px; flex:1}
-  .dep-item .dep-amount{font-weight:600}
+  .dep-item .dep-amount{font-weight:600; cursor:pointer; border-bottom:1px dashed var(--border-soft)}
   .deposit-add{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 4px}
   .deposit-add .fld{flex:none}
   .dep-btn{font:inherit; font-size:12.5px; font-weight:600; border:1px solid var(--line); background:var(--card); color:var(--clay); border-radius:9px; padding:8px 12px; cursor:pointer}
@@ -138,7 +144,11 @@
   .agree-party h4{font-size:12.5px; font-weight:700; color:var(--clay); margin-bottom:8px}
   .agree-party .agree-field{margin-bottom:8px}
 
-  .filters{display:flex; gap:8px; margin-top:16px; flex-wrap:wrap}
+  .search-box{margin-top:16px}
+  .search-box input{width:100%; font:inherit; font-size:14px; border:1px solid var(--line); border-radius:12px; padding:11px 14px; outline:none; background:var(--card); color:var(--ink)}
+  .search-box input:focus{border-color:var(--clay)}
+  .search-box input::-webkit-search-cancel-button{cursor:pointer}
+  .filters{display:flex; gap:8px; margin-top:12px; flex-wrap:wrap}
   .chip{font:inherit; font-size:13px; font-weight:600; border:1px solid var(--line); background:var(--card); color:var(--muted); border-radius:99px; padding:8px 15px; cursor:pointer}
   .chip.on{background:var(--clay); color:#fff; border-color:var(--clay)}
 
@@ -221,6 +231,13 @@
   .chart-legend{display:flex; gap:16px; flex-wrap:wrap; margin-top:10px; font-size:12px; color:var(--muted)}
   .chart-legend .sw{display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:5px; vertical-align:-1px}
 
+  .activity-list{list-style:none; margin:8px 0 0; padding:0; display:flex; flex-direction:column; gap:2px}
+  .activity-item{display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding:8px 0; border-bottom:1px solid var(--border-soft)}
+  .activity-item:last-child{border-bottom:none}
+  .activity-text{font-size:13.5px; color:var(--ink)}
+  .activity-when{font-size:11.5px; color:var(--muted); white-space:nowrap; flex-shrink:0}
+  .activity-empty{font-size:12.5px; color:var(--muted); padding:12px 0; text-align:center; list-style:none}
+
   .actions{display:flex; gap:10px; margin-top:18px}
   .btn{flex:1; font:inherit; font-size:14px; font-weight:600; border-radius:12px; padding:13px; cursor:pointer; text-align:center; border:1px solid var(--line)}
   .btn.primary{color:#fff; background:var(--clay); border-color:var(--clay)}
@@ -248,6 +265,14 @@
   .authbox .btn{width:100%}
   .auth-error{color:var(--error); font-size:12.5px; margin-top:8px; min-height:16px}
   .auth-skip{display:block; text-align:center; width:100%; margin-top:12px; font:inherit; font-size:12.5px; color:var(--muted); background:none; border:none; cursor:pointer; text-decoration:underline}
+
+  /* ---- Telas maiores: usa o espaço extra em vez de ficar numa coluna estreita ---- */
+  @media (min-width:760px){
+    body{max-width:900px}
+    .wrap{padding:0 28px}
+    .hero-text{padding:24px 28px 22px}
+    .chart-grid{grid-template-columns:1fr 1fr}
+  }
 </style>
 </head>
 <body>
@@ -290,6 +315,11 @@
   <div class="count-line"><b id="done">0</b> de <b id="total">0</b> itens · faltam <b id="left">0</b></div>
 </div>
 
+<div class="chartcard" id="activity-card">
+  <h3>Atividade recente</h3>
+  <ul class="activity-list" id="activity-list"></ul>
+</div>
+
 <div class="divcard">
   <h3>Divisão de custos</h3>
   <p class="hint">Marque quem pagou cada item comprado (botões em cada linha) pra ver o acerto 50/50.</p>
@@ -303,9 +333,13 @@
   <div class="acerto" id="acerto">Ninguém marcou compras ainda.</div>
 </div>
 
+<div class="search-box">
+  <input id="search-input" type="search" placeholder="🔎 Buscar item pelo nome…">
+</div>
+
 <div class="filters">
-  <button class="chip on" data-f="all">Tudo</button>
-  <button class="chip" data-f="left">Só o que falta</button>
+  <button class="chip" data-f="all">Tudo</button>
+  <button class="chip on" data-f="left">Só o que falta</button>
   <button class="chip" data-f="ess">Só essenciais</button>
   <button class="chip" data-f="bought">Comprados</button>
 </div>
@@ -346,6 +380,8 @@
   <div class="capsum" id="cap-summary">Preencha os campos acima pra ver o cálculo.</div>
 </div>
 
+<div class="chart-grid">
+
 <div class="chartcard" id="chart-deposits-card">
   <h3>Evolução dos depósitos</h3>
   <p class="hint">Cada depósito, quando foi e quanto já dá de total acumulado (os dois juntos).</p>
@@ -362,6 +398,14 @@
   <h3>Estimado × comprado × guardado</h3>
   <p class="hint">Quanto custa tudo, quanto já foi comprado e quanto já está guardado (os dois juntos).</p>
   <div id="chart-progress"></div>
+</div>
+
+<div class="chartcard" id="chart-monthly-card">
+  <h3>Guardado por mês</h3>
+  <p class="hint">Total guardado em cada mês, com a parte de cada um empilhada na mesma barra.</p>
+  <div id="chart-monthly"></div>
+</div>
+
 </div>
 
 <div class="chartcard">
@@ -488,12 +532,13 @@ const DEFAULT_GROUPS = [
 const KEY = 'argeu-mayara-checklist-v2';
 const OLD_KEY = 'argeu-mayara-checklist-v1';
 let model = null;
-let filter = 'all';
+let filter = 'left';
+let searchQuery = '';
 let auth = null, db = null, remoteRef = null, suppressNextWrite = false;
 
 function seed(){
   return {
-    budget: 0, capMonthly: 0, deposits: [], nameA: 'Argeu', nameP: 'Mayara',
+    budget: 0, capMonthly: 0, deposits: [], activity: [], nameA: 'Argeu', nameP: 'Mayara',
     agreement: { accountRef:'', parties:{ A:{name:'',cpf:'',address:''}, P:{name:'',cpf:'',address:''} }, signatures:{ A:null, P:null } },
     groups: DEFAULT_GROUPS.map(gr => ({
       g:gr.g, emoji:gr.emoji,
@@ -520,6 +565,7 @@ function normalizeModel(){
   if(!model.budget) model.budget=model.budget||0;
   if(!model.capMonthly) model.capMonthly=model.capMonthly||0;
   if(!Array.isArray(model.deposits)) model.deposits=[];
+  if(!Array.isArray(model.activity)) model.activity=[];
   if(model.capAtual>0 && model.deposits.length===0){
     model.deposits.push({ id:uid(), amount:model.capAtual, who:'', when:'', note:'Saldo inicial' });
   }
@@ -553,7 +599,32 @@ const uid = () => 'x'+Math.random().toString(36).slice(2,8);
 const svgCheck = () => '<svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg>';
 function escapeHtml(s){ return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 const set = (id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
-const matches = it => filter==='all' ? true : filter==='left' ? !it.checked : filter==='bought' ? it.checked : it.ess;
+function logActivity(text){
+  if(!Array.isArray(model.activity)) model.activity=[];
+  model.activity.unshift({ text, when: new Date().toISOString() });
+  model.activity = model.activity.slice(0,15);
+}
+function timeAgo(iso){
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const min = Math.floor(diffMs/60000);
+  if(min<1) return 'agora mesmo';
+  if(min<60) return 'há '+min+' min';
+  const h = Math.floor(min/60);
+  if(h<24) return 'há '+h+'h';
+  const d = Math.floor(h/24);
+  return 'há '+d+' dia'+(d>1?'s':'');
+}
+function renderActivity(){
+  const el = document.getElementById('activity-list');
+  if(!el) return;
+  if(!model.activity.length){ el.innerHTML = '<li class="activity-empty">Nenhuma atividade ainda.</li>'; return; }
+  el.innerHTML = model.activity.map(a=>`<li class="activity-item"><span class="activity-text">${escapeHtml(a.text)}</span><span class="activity-when">${timeAgo(a.when)}</span></li>`).join('');
+}
+const matches = it => {
+  const passFilter = filter==='all' ? true : filter==='left' ? !it.checked : filter==='bought' ? it.checked : it.ess;
+  const passSearch = !searchQuery || it.label.toLowerCase().includes(searchQuery);
+  return passFilter && passSearch;
+};
 function updateGroupSubtotal(gi){
   const gr = model.groups[gi]; if(!gr) return;
   const done = gr.items.filter(i=>i.checked).length;
@@ -573,7 +644,7 @@ function render(){
     const done = gr.items.filter(i=>i.checked).length;
     const sub = gr.items.reduce((s,i)=>s+eff(i),0);
     const rowsData = gr.items.map((it,ii)=>({it,ii})).filter(o=>matches(o.it));
-    if(rowsData.length===0 && filter!=='all') return '';
+    if(rowsData.length===0 && (filter!=='all' || searchQuery)) return '';
     const rows = rowsData.map(({it,ii})=>`
       <li class="item ${it.checked?'done':''}" data-g="${gi}" data-i="${ii}">
         <div class="item-top">
@@ -595,7 +666,7 @@ function render(){
           ? `<a href="${escapeHtml(it.link)}" target="_blank" rel="noopener noreferrer" class="link-pill">🔗 Ver produto</a><button class="link-btn" data-act="link-edit">editar</button><button class="link-btn" data-act="link-clear">remover</button>`
           : `<button class="link-btn" data-act="link-add">+ Colar link do produto</button>`}</div>
       </li>`).join('');
-    const addForm = filter==='all' ? `
+    const addForm = (filter==='all' || filter==='left') ? `
         <li class="additem">
           <button class="add-toggle" data-act="add-open">+ Adicionar item</button>
           <div class="add-form">
@@ -623,6 +694,7 @@ function render(){
 
   renderDeposits();
   renderAgreement();
+  renderActivity();
   updateTotals();
   initSortable();
 }
@@ -700,7 +772,7 @@ function renderDeposits(){
     <li class="dep-item" data-di="${di}">
       <span class="dep-who">${escapeHtml(whoLabel(d.who))}</span>
       <span class="dep-when">${escapeHtml(d.when||d.note||'')}</span>
-      <span class="dep-amount">${money(d.amount)}</span>
+      <span class="dep-amount" data-act="dep-edit" title="Editar valor">${money(d.amount)}</span>
       <button class="del" data-act="dep-del" aria-label="Remover">×</button>
     </li>`).join('');
 }
@@ -771,6 +843,55 @@ function renderCharts(){
   renderDepositsChart();
   renderIndividualChart();
   renderProgressChart();
+  renderMonthlyChart();
+}
+const MONTH_ABBR = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+function renderMonthlyChart(){
+  const el = document.getElementById('chart-monthly');
+  if(!el) return;
+  const byMonth = {};
+  model.deposits.forEach(d=>{
+    if(!d.when) return;
+    const parts = d.when.split('/');
+    if(parts.length!==3) return;
+    const mm = +parts[1], yyyy = +parts[2];
+    if(!mm || !yyyy) return;
+    const key = yyyy+'-'+mm;
+    if(!byMonth[key]) byMonth[key] = { mm, yyyy, A:0, P:0 };
+    if(d.who==='A') byMonth[key].A += (d.amount||0);
+    else if(d.who==='P') byMonth[key].P += (d.amount||0);
+  });
+  const months = Object.values(byMonth).sort((a,b)=> a.yyyy-b.yyyy || a.mm-b.mm);
+  if(!months.length){ el.innerHTML = '<p class="chart-empty">Nenhum depósito com data registrada ainda.</p>'; return; }
+  const maxV = Math.max(...months.map(m=>m.A+m.P), 1);
+  const barW=40, gap=26, padL=50, padR=14, padT=26, padB=30, H=220;
+  const plotH = H-padT-padB;
+  const totalW = months.length*barW + Math.max(0,months.length-1)*gap;
+  const W = padL+padR+totalW;
+  const baseY = padT+plotH;
+  const bars = months.map((m,i)=>{
+    const bx = padL + i*(barW+gap);
+    const aH = (m.A/maxV)*plotH;
+    const pH = (m.P/maxV)*plotH;
+    const gapSeg = (m.A>0 && m.P>0) ? 2 : 0;
+    const pY = baseY - pH;
+    const aY = pY - gapSeg - aH;
+    let segs = '';
+    if(m.P>0) segs += `<rect class="cx-bar" x="${bx.toFixed(1)}" y="${pY.toFixed(1)}" width="${barW}" height="${pH.toFixed(1)}" rx="4" fill="${CHART_COLORS.P}"><title>${escapeHtml(model.nameP)}: ${money(m.P)}</title></rect>`;
+    if(m.A>0) segs += `<rect class="cx-bar" x="${bx.toFixed(1)}" y="${aY.toFixed(1)}" width="${barW}" height="${aH.toFixed(1)}" rx="4" fill="${CHART_COLORS.A}"><title>${escapeHtml(model.nameA)}: ${money(m.A)}</title></rect>`;
+    const topY = m.A>0 ? aY : (m.P>0 ? pY : baseY);
+    const label = `<text class="cx-label" x="${(bx+barW/2).toFixed(1)}" y="${(topY-8).toFixed(1)}" text-anchor="middle">${money(m.A+m.P)}</text>`;
+    const monthLabel = `<text x="${(bx+barW/2).toFixed(1)}" y="${H-8}" text-anchor="middle" font-size="11">${MONTH_ABBR[m.mm-1]}/${String(m.yyyy).slice(2)}</text>`;
+    return segs+label+monthLabel;
+  }).join('');
+  el.innerHTML = `<div style="overflow-x:auto"><svg class="chart-svg" style="min-width:${Math.max(W,300)}px" viewBox="0 0 ${Math.max(W,300)} ${H}" role="img" aria-label="Quanto foi guardado por mês, total e individual de cada um">
+    <line class="cx-axis" x1="${padL}" y1="${baseY.toFixed(1)}" x2="${W-padR}" y2="${baseY.toFixed(1)}"/>
+    ${bars}
+  </svg></div>
+  <div class="chart-legend">
+    <span><span class="sw" style="background:${CHART_COLORS.A}"></span>${escapeHtml(model.nameA)}</span>
+    <span><span class="sw" style="background:${CHART_COLORS.P}"></span>${escapeHtml(model.nameP)}</span>
+  </div>`;
 }
 function renderIndividualChart(){
   const el = document.getElementById('chart-individual');
@@ -861,8 +982,12 @@ function wire(){
     const act = e.target.closest('[data-act]'); if(!act) return;
     const type = act.dataset.act;
     const li = e.target.closest('.item'); const sec = e.target.closest('.group');
-    if(type==='check' && li){ const it=item(li); it.checked=!it.checked; save(); render(); }
-    else if(type==='del' && li){ model.groups[+li.dataset.g].items.splice(+li.dataset.i,1); save(); render(); }
+    if(type==='check' && li){ const it=item(li); it.checked=!it.checked; if(it.checked) logActivity('"'+it.label+'" marcado como comprado'); save(); render(); }
+    else if(type==='del' && li){
+      const it = item(li);
+      if(!confirm('Remover "'+it.label+'"? Essa ação não pode ser desfeita.')) return;
+      model.groups[+li.dataset.g].items.splice(+li.dataset.i,1); save(); render();
+    }
     else if(type==='payer' && li){ const it=item(li); const p=act.dataset.p; it.payer = it.payer===p ? '' : p; save(); render(); }
     else if(type==='toggle-ess' && li){ const it=item(li); it.ess=!it.ess; save(); render(); }
     else if(type==='link-add' || type==='link-edit'){
@@ -906,10 +1031,23 @@ function wire(){
   document.getElementById('name-p').addEventListener('change', e=>{ model.nameP = e.target.value.trim()||'Mayara'; save(); updatePayerLabels(); renderDeposits(); renderAgreement(); updateTotals(); });
 
   document.getElementById('deposit-list').addEventListener('click', e=>{
-    const act = e.target.closest('[data-act="dep-del"]'); if(!act) return;
     const li = e.target.closest('.dep-item'); if(!li) return;
-    model.deposits.splice(+li.dataset.di, 1);
-    save(); renderDeposits(); updateTotals();
+    const di = +li.dataset.di;
+    const delAct = e.target.closest('[data-act="dep-del"]');
+    const editAct = e.target.closest('[data-act="dep-edit"]');
+    if(delAct){
+      if(!confirm('Remover esse depósito? Essa ação não pode ser desfeita.')) return;
+      model.deposits.splice(di, 1);
+      save(); renderDeposits(); updateTotals();
+    } else if(editAct){
+      const d = model.deposits[di];
+      const novo = prompt('Novo valor do depósito:', d.amount);
+      if(novo===null) return;
+      const val = parseMoney(novo);
+      if(val<=0) return;
+      d.amount = val;
+      save(); renderDeposits(); updateTotals();
+    }
   });
   ['dep-add-a','dep-add-p'].forEach(id=>{
     document.getElementById(id).addEventListener('click', e=>{
@@ -919,6 +1057,7 @@ function wire(){
       if(amount<=0){ input.focus(); return; }
       model.deposits.push({ id:uid(), amount, who, when:new Date().toLocaleDateString('pt-BR'), note:'' });
       input.value='';
+      logActivity((who==='A'?model.nameA:model.nameP)+' guardou '+money(amount));
       save(); renderDeposits(); updateTotals();
     });
   });
@@ -940,6 +1079,7 @@ function wire(){
     if(!auth || !auth.currentUser) return;
     const who = btn.dataset.who;
     model.agreement.signatures[who] = { email: auth.currentUser.email, when: new Date().toISOString() };
+    logActivity((who==='A'?model.nameA:model.nameP)+' confirmou o acordo de depósitos');
     save(); renderAgreement();
   });
   document.getElementById('agree-pdf-btn').addEventListener('click', buildAgreementPDF);
@@ -951,6 +1091,11 @@ function wire(){
       document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on', c===chip));
       render();
     });
+  });
+
+  document.getElementById('search-input').addEventListener('input', e=>{
+    searchQuery = e.target.value.trim().toLowerCase();
+    render();
   });
 
   const TAB_IDS = ['checklist','financeiro','acordo'];
@@ -972,6 +1117,7 @@ function addItem(sec){
   const ess = sec.querySelector('.add-ess-check').checked;
   if(!name){ sec.querySelector('.add-name').focus(); return; }
   model.groups[gi].items.push({ id:uid(), label:name, est, real:0, payer:'', link:'', ess, have:false, checked:false });
+  logActivity('"'+name+'" foi adicionado à lista');
   save(); render();
   const s2 = document.querySelector(`.group[data-gi="${gi}"]`);
   if(s2){ s2.classList.remove('collapsed'); s2.querySelector('.add-form').classList.add('open'); s2.querySelector('.add-name').focus(); }
@@ -1207,6 +1353,7 @@ async function buildFinanceReportPDF(){
     await drawChartImage('chart-deposits', 'Evolução dos depósitos');
     await drawChartImage('chart-individual', 'Quem guardou mais');
     await drawChartImage('chart-progress', 'Estimado × comprado × guardado');
+    await drawChartImage('chart-monthly', 'Guardado por mês');
 
     const pdfBytes = await pdfDoc.save();
     const blob = new Blob([pdfBytes], { type:'application/pdf' });
@@ -1321,6 +1468,9 @@ wireTheme();
 wireAuth();
 initSync();
 loadScript('https://cdn.jsdelivr.net/npm/sortablejs@1.15.7/Sortable.min.js').then(initSortable).catch(()=>{});
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+}
 </script>
 </body>
 </html>

@@ -1,0 +1,15 @@
+{
+  "name": "Argeu & Mayara — Nossa Casa, Nossa Vida Nova",
+  "short_name": "Casa & Vida Nova",
+  "description": "Checklist da casa nova e finanças compartilhadas de Argeu & Mayara.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#F6F1EA",
+  "theme_color": "#B5673F",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
