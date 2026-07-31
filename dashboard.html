@@ -5,11 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Painel — Argeu &amp; Mayara</title>
 <link rel="icon" href="assets/icon-192.png">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<meta name="theme-color" content="#B5673F">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  /* Mesma paleta do index.html — claro/escuro compartilhados via variáveis CSS. */
+  /* Mesma paleta e casca (capa + abas) do index.html, pra ficar tudo com a mesma cara. */
   :root{
     color-scheme: light;
     --paper:#F6F1EA; --card:#FFFFFF; --ink:#2A241F; --muted:#8D8172;
@@ -46,37 +48,39 @@
   *{box-sizing:border-box;margin:0;padding:0}
   html{-webkit-text-size-adjust:100%}
   body{font-family:'Inter',system-ui,sans-serif; background:var(--paper); color:var(--ink);
-    line-height:1.45; -webkit-font-smoothing:antialiased}
+    line-height:1.45; padding-bottom:50px; max-width:640px; margin:0 auto; -webkit-font-smoothing:antialiased}
+  .wrap{padding:0 14px}
   :focus-visible{outline:3px solid var(--gold); outline-offset:2px; border-radius:6px}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  .eyebrow{font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--clay); font-weight:600}
+  h1{font-family:'Fraunces',Georgia,serif; font-weight:900; font-size:clamp(28px,8vw,40px); line-height:1.02; letter-spacing:-.01em; margin:6px 0 4px}
+  h1 em{font-style:italic; color:var(--clay)}
+  .lede{color:var(--muted); font-size:14.5px; max-width:46ch}
 
-  /* ---- Casca: barra lateral (sempre escura, marca fixa) + conteúdo ---- */
-  .dash-shell{display:flex; flex-direction:column; min-height:100vh}
-  .sidebar{background:#241D16; color:#F1E6C8; display:flex; align-items:center; gap:12px;
-    padding:10px 14px; overflow-x:auto; flex-shrink:0}
-  .sb-brand{display:flex; align-items:center; gap:8px; flex-shrink:0}
-  .sb-logo{width:28px; height:28px; border-radius:8px; display:block}
-  .sb-brand-text{display:none; font-family:'Fraunces',serif; font-weight:700; font-size:15px; line-height:1.2; white-space:nowrap}
-  .sb-brand-text b{color:#D9895A}
-  .sb-nav{display:flex; gap:6px; flex-shrink:0}
-  .sb-nav a{display:flex; align-items:center; gap:6px; padding:8px 13px; border-radius:99px;
-    color:#D8CBBA; text-decoration:none; font-size:12.5px; font-weight:600; white-space:nowrap}
-  .sb-nav a:hover{background:rgba(255,255,255,.08)}
-  .sb-nav a.on{background:#B5673F; color:#fff}
-  .sb-theme{margin-left:auto; flex-shrink:0; display:flex; align-items:center; gap:8px; background:none;
-    border:1px solid rgba(255,255,255,.18); color:#D8CBBA; border-radius:99px; padding:8px 11px;
-    font:inherit; font-size:13px; cursor:pointer}
-  .sb-theme:hover{background:rgba(255,255,255,.08)}
-  .sb-theme span{display:none}
+  /* ---- Capa (idêntica ao index.html) ---- */
+  .hero{position:relative; height:clamp(220px,42vw,320px); overflow:hidden}
+  .theme-toggle{position:absolute; top:14px; right:14px; z-index:5; width:38px; height:38px; border-radius:50%; border:none; background:rgba(20,16,12,.4); color:#fff; font-size:17px; cursor:pointer; display:grid; place-items:center; backdrop-filter:blur(4px)}
+  .theme-toggle:active{background:rgba(20,16,12,.6)}
+  .hero img{width:100%; height:100%; object-fit:cover; object-position:50% 30%; display:block}
+  .hero::after{content:'';position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(42,36,31,.05) 0%, rgba(42,36,31,.35) 55%, rgba(42,36,31,.78) 100%)}
+  .hero-text{position:absolute; left:0; right:0; bottom:0; padding:18px 14px 16px; color:#fff}
+  .hero-text .eyebrow{color:#F1E6C8}
+  .hero-text h1{color:#fff}
+  .hero-text h1 em{color:var(--gold-soft); font-style:italic}
+  .hero-text .lede{color:rgba(255,255,255,.85)}
 
-  .main{flex:1; min-width:0; padding-bottom:50px}
-  .wrap{padding:0 14px; max-width:1100px; margin:0 auto}
+  /* ---- Abas (idênticas ao index.html) ---- */
+  .tabbar{display:flex; gap:8px; margin-top:18px; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:5px; box-shadow:var(--shadow)}
+  .tabbtn{flex:1; font:inherit; font-size:13.5px; font-weight:600; color:var(--muted); background:none; border:none; border-radius:10px; padding:10px; cursor:pointer}
+  .tabbtn.on{background:var(--clay); color:#fff}
+  .tabbar a.tabbtn{text-decoration:none; display:flex; align-items:center; justify-content:center; text-align:center}
 
-  .dash-title{font-family:'Fraunces',Georgia,serif; font-weight:900; font-size:clamp(24px,7vw,32px); line-height:1.05; margin:20px 0 2px}
+  .dash-title{font-family:'Fraunces',Georgia,serif; font-weight:900; font-size:clamp(22px,6vw,28px); line-height:1.05; margin:18px 0 2px}
   .dash-title em{font-style:italic; color:var(--clay)}
   .dash-sub{color:var(--muted); font-size:13.5px; margin-bottom:4px}
 
-  .chartcard{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px; box-shadow:var(--shadow)}
+  .chartcard{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px; box-shadow:var(--shadow); margin-top:0}
   .chartcard h3{font-family:'Fraunces',serif; font-size:17px; font-weight:600; margin-bottom:2px}
   .chartcard .hint{font-size:12px; color:var(--muted); margin:3px 0 14px}
   .chart-empty{font-size:12.5px; color:var(--muted); padding:20px 0; text-align:center}
@@ -90,14 +94,11 @@
   .chart-legend{display:flex; gap:16px; flex-wrap:wrap; margin-top:10px; font-size:12px; color:var(--muted)}
   .chart-legend .sw{display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:5px; vertical-align:-1px}
 
-  /* ---- Grid assimétrico (mobile: pilha única na ordem do mockup) ---- */
-  .dash-grid{display:flex; flex-direction:column; gap:14px; margin-top:14px}
-  #dash-content[hidden]{display:none}
-  .dash-left{display:flex; flex-direction:column; gap:14px}
-  .dash-stats{display:grid; grid-template-columns:1fr; gap:14px}
+  /* ---- Blocos do painel: cada bloco agrupa cards de tamanho parecido ---- */
+  .chart-grid{display:grid; grid-template-columns:1fr; gap:14px; margin-top:14px; align-items:start}
+  .dash-stats{display:grid; grid-template-columns:1fr; gap:14px; margin-top:14px}
   .dash-stats .chartcard{text-align:center}
-  .dash-side{display:flex; flex-direction:column; gap:14px}
-  .dash-bottom{display:grid; grid-template-columns:1fr; gap:14px}
+  .dash-block{margin-top:14px}
 
   .donut-wrap{position:relative; width:118px; height:118px; margin:6px auto 4px}
   .donut-wrap.inline{margin:0; flex-shrink:0}
@@ -105,7 +106,7 @@
   .donut-center b{font-family:'Fraunces',serif; font-weight:900; font-size:25px; line-height:1; color:var(--ink)}
   .donut-center span{font-size:10px; color:var(--muted); margin-top:3px; text-align:center; line-height:1.25}
   .donut-close{display:flex; align-items:center; gap:16px; margin-top:8px}
-  .donut-close p{font-size:12.5px; color:var(--muted); line-height:1.5}
+  .donut-close p{font-size:12.5px; color:var(--muted); line-height:1.5; text-align:left}
   .donut-close b{color:var(--ink)}
 
   .badge-list{list-style:none; display:flex; flex-direction:column; gap:2px; margin-top:8px}
@@ -139,117 +140,99 @@
   footer.credits{text-align:center; font-size:12px; color:var(--muted); margin-top:26px; padding:0 14px}
 
   @media (min-width:760px){
-    .dash-shell{flex-direction:row}
-    .sidebar{flex-direction:column; align-items:stretch; width:220px; height:100vh; position:sticky; top:0;
-      padding:22px 16px; overflow-x:visible; gap:26px}
-    .sb-brand-text{display:block}
-    .sb-nav{flex-direction:column; gap:4px}
-    .sb-nav a{border-radius:10px; padding:10px 12px; font-size:14px}
-    .sb-theme{margin-left:0; margin-top:auto; border-radius:10px; padding:10px 12px}
-    .sb-theme span{display:inline}
-
+    body{max-width:900px}
     .wrap{padding:0 28px}
-    .dash-grid{
-      display:grid; grid-template-columns:2fr 1fr; align-items:start;
-      grid-template-areas:"left side" "bottom bottom";
-    }
-    .dash-left{grid-area:left}
-    .dash-stats{grid-template-columns:repeat(3,1fr)}
-    .dash-side{grid-area:side}
-    .dash-bottom{grid-area:bottom; grid-template-columns:1fr 1fr}
+    .hero-text{padding:24px 28px 22px}
+    .chart-grid{grid-template-columns:1fr 1fr}
+    .dash-stats{grid-template-columns:repeat(4,1fr)}
   }
 </style>
 </head>
 <body>
-<div class="dash-shell">
 
-  <aside class="sidebar">
-    <div class="sb-brand">
-      <img class="sb-logo" src="assets/icon-192.png" alt="">
-      <div class="sb-brand-text">Argeu <b>&amp;</b> Mayara</div>
-    </div>
-    <nav class="sb-nav">
-      <a href="index.html">📋 <span>Checklist</span></a>
-      <a href="index.html#financeiro">💰 <span>Financeiro</span></a>
-      <a href="index.html#acordo">📝 <span>Acordo</span></a>
-      <a href="dashboard.html" class="on">📊 <span>Painel</span></a>
-    </nav>
-    <button class="sb-theme" id="theme-toggle" aria-label="Alternar modo claro/escuro" title="Alternar modo claro/escuro">🌙 <span>Tema</span></button>
-  </aside>
-
-  <div class="main">
-    <div class="wrap">
-
-      <div class="dash-title">📊 Painel <em>geral</em></div>
-      <div class="dash-sub">Um resumo visual de tudo — Argeu &amp; Mayara</div>
-
-      <div id="dash-empty" hidden class="empty-state">
-        <h2>Ainda não há dados por aqui</h2>
-        <p>Esse painel mostra um resumo do que já foi preenchido no checklist. Abra o checklist primeiro pra começar a registrar itens, orçamento e depósitos.</p>
-        <a class="btn-primary" href="index.html">Abrir o checklist</a>
-      </div>
-
-      <div id="dash-content" class="dash-grid" hidden>
-
-        <div class="dash-left">
-          <div class="chartcard dash-hero">
-            <h3>Evolução dos depósitos</h3>
-            <p class="hint">Cada depósito, quando foi e quanto já dá de total acumulado (os dois juntos).</p>
-            <div id="chart-deposits"></div>
-          </div>
-
-          <div class="dash-stats">
-            <div class="chartcard">
-              <h3>Checklist concluído</h3>
-              <div id="donut-pct"></div>
-            </div>
-            <div class="chartcard">
-              <h3>Quem guardou mais</h3>
-              <div id="donut-who"></div>
-            </div>
-            <div class="chartcard">
-              <h3>Estimado × comprado × guardado</h3>
-              <p class="hint">Os três totais lado a lado.</p>
-              <div id="chart-progress"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="dash-side">
-          <div class="chartcard">
-            <h3>Itens por cômodo</h3>
-            <p class="hint">Quantos itens ainda faltam em cada cômodo.</p>
-            <ul class="badge-list" id="badge-list"></ul>
-          </div>
-          <div class="chartcard">
-            <h3>Guardado por mês</h3>
-            <p class="hint">Total por mês, com a parte de cada um empilhada.</p>
-            <div id="chart-monthly"></div>
-          </div>
-          <div class="chartcard">
-            <h3>Guardado até agora</h3>
-            <div id="donut-close"></div>
-          </div>
-        </div>
-
-        <div class="dash-bottom">
-          <div class="chartcard">
-            <h3>Progresso por cômodo</h3>
-            <p class="hint">% de itens já comprados em cada cômodo.</p>
-            <div id="proom-list"></div>
-          </div>
-          <div class="chartcard">
-            <h3>Atividade recente</h3>
-            <ul class="activity-list" id="activity-list"></ul>
-          </div>
-        </div>
-
-      </div>
-
-      <footer class="credits">Painel gerado a partir dos dados salvos neste navegador — mesmos dados do <a href="index.html" style="color:var(--clay)">checklist</a>.</footer>
-
-    </div>
+<div class="hero">
+  <img src="assets/capa-argeu-mayara.jpg" alt="Argeu e Mayara">
+  <button class="theme-toggle" id="theme-toggle" aria-label="Alternar modo claro/escuro" title="Alternar modo claro/escuro">🌙</button>
+  <div class="hero-text">
+    <div class="eyebrow">Argeu &amp; Mayara · recomeçando a vida juntos</div>
+    <h1>Nossa casa, <em>item por item</em></h1>
+    <p class="lede">Um passo de cada vez pra construir o nosso ninho e escrever essa história de amor.</p>
   </div>
+</div>
+
+<div class="wrap">
+
+  <div class="tabbar">
+    <a class="tabbtn" href="index.html">📋 Checklist</a>
+    <a class="tabbtn" href="index.html#financeiro">💰 Financeiro</a>
+    <a class="tabbtn" href="index.html#acordo">📝 Acordo</a>
+    <a class="tabbtn on" href="dashboard.html">📊 Painel</a>
+  </div>
+
+  <div class="dash-title">📊 Painel <em>geral</em></div>
+  <div class="dash-sub">Um resumo visual de tudo</div>
+
+  <div id="dash-empty" hidden class="empty-state">
+    <h2>Ainda não há dados por aqui</h2>
+    <p>Esse painel mostra um resumo do que já foi preenchido no checklist. Abra o checklist primeiro pra começar a registrar itens, orçamento e depósitos.</p>
+    <a class="btn-primary" href="index.html">Abrir o checklist</a>
+  </div>
+
+  <div id="dash-content" hidden>
+
+    <div class="dash-stats">
+      <div class="chartcard">
+        <h3>Checklist concluído</h3>
+        <div id="donut-pct"></div>
+      </div>
+      <div class="chartcard">
+        <h3>Quem guardou mais</h3>
+        <div id="donut-who"></div>
+      </div>
+      <div class="chartcard">
+        <h3>Estimado × comprado × guardado</h3>
+        <div id="chart-progress"></div>
+      </div>
+      <div class="chartcard">
+        <h3>Guardado até agora</h3>
+        <div id="donut-close"></div>
+      </div>
+    </div>
+
+    <div class="chart-grid dash-block">
+      <div class="chartcard">
+        <h3>Evolução dos depósitos</h3>
+        <p class="hint">Cada depósito, quando foi e quanto já dá de total acumulado.</p>
+        <div id="chart-deposits"></div>
+      </div>
+      <div class="chartcard">
+        <h3>Guardado por mês</h3>
+        <p class="hint">Barra de cada um e do total, mês a mês.</p>
+        <div id="chart-monthly"></div>
+      </div>
+    </div>
+
+    <div class="chart-grid dash-block">
+      <div class="chartcard">
+        <h3>Itens por cômodo</h3>
+        <p class="hint">Quantos itens ainda faltam em cada cômodo.</p>
+        <ul class="badge-list" id="badge-list"></ul>
+      </div>
+      <div class="chartcard">
+        <h3>Progresso por cômodo</h3>
+        <p class="hint">% de itens já comprados em cada cômodo.</p>
+        <div id="proom-list"></div>
+      </div>
+    </div>
+
+    <div class="chartcard dash-block">
+      <h3>Atividade recente</h3>
+      <ul class="activity-list" id="activity-list"></ul>
+    </div>
+
+  </div>
+
+  <footer class="credits">Painel gerado a partir dos dados salvos neste navegador — mesmos dados do <a href="index.html" style="color:var(--clay)">checklist</a>.</footer>
 
 </div>
 
@@ -264,10 +247,7 @@ function currentEffectiveTheme(){
 function updateThemeToggleIcon(){
   const btn = document.getElementById('theme-toggle');
   if(!btn) return;
-  const icon = currentEffectiveTheme()==='dark' ? '☀️' : '🌙';
-  const label = btn.querySelector('span');
-  if(label) btn.firstChild.textContent = icon+' ';
-  else btn.textContent = icon;
+  btn.textContent = currentEffectiveTheme()==='dark' ? '☀️' : '🌙';
 }
 function applyTheme(t){
   if(t==='dark' || t==='light') document.documentElement.dataset.theme = t;
@@ -285,7 +265,6 @@ document.getElementById('theme-toggle').addEventListener('click', ()=>{
   try{ localStorage.setItem(THEME_KEY, next); }catch(e){}
 });
 initTheme();
-document.querySelector('.sb-nav a.on')?.scrollIntoView({inline:'center', block:'nearest'});
 
 /* ================= DADOS (somente leitura do mesmo localStorage do checklist) ================= */
 const KEY = 'argeu-mayara-checklist-v2';
@@ -320,6 +299,7 @@ if(hasData){
   if(!Array.isArray(model.activity)) model.activity = [];
 
   const CHART_COLORS = { A:'#B5673F', P:'#0A9696', other:'#4B4FC4' };
+  const MONTH_ABBR = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
 
   function svgDonut(frac, colorTrack, colorValue, ariaLabel){
     const size=118, thickness=14, r=(size-thickness)/2, cx=size/2, cy=size/2;
@@ -410,7 +390,7 @@ if(hasData){
           ${svgDonut(fracCap, cssVar('--line'), cssVar('--sage'), 'Guardado '+Math.round(fracCap*100)+'% do estimado')}
           <div class="donut-center"><b>${Math.round(fracCap*100)}%</b></div>
         </div>
-        <p>Já guardaram <b>${money(cap)}</b> de um total estimado de <b>${money(est)}</b>${falta>0 ? ' — faltam '+money(falta)+'.' : ' — já dá pra cobrir tudo! 🎉'}</p>
+        <p>Guardaram <b>${money(cap)}</b> de <b>${money(est)}</b> estimados${falta>0 ? ' — faltam '+money(falta)+'.' : ' — já dá! 🎉'}</p>
       </div>`;
   } else {
     closeEl.innerHTML = '<p class="chart-empty">Defina os valores estimados no checklist pra ver esse cálculo.</p>';
@@ -465,8 +445,7 @@ if(hasData){
       <div class="proom-track"><div class="proom-fill" style="width:${r.pct}%"></div></div>
     </div>`).join('') || '<p class="chart-empty">Nenhum cômodo ainda.</p>';
 
-  // ---- Guardado por mês (barras empilhadas) ----
-  const MONTH_ABBR = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  // ---- Guardado por mês (barras agrupadas: cada um + total) ----
   const monthlyEl = document.getElementById('chart-monthly');
   const byMonth = {};
   model.deposits.forEach(d=>{
@@ -485,33 +464,38 @@ if(hasData){
     monthlyEl.innerHTML = '<p class="chart-empty">Nenhum depósito com data registrada ainda.</p>';
   } else {
     const maxV = Math.max(...months.map(m=>m.A+m.P), 1);
-    const barW=40, gap=26, padL=50, padR=14, padT=26, padB=30, H=220;
+    const barW=20, innerGap=4, groupGap=26, padL=40, padR=32, padT=26, padB=34, H=220;
     const plotH = H-padT-padB;
-    const totalW = months.length*barW + Math.max(0,months.length-1)*gap;
+    const groupW = barW*3 + innerGap*2;
+    const totalW = months.length*groupW + Math.max(0,months.length-1)*groupGap;
     const W = padL+padR+totalW;
     const baseY = padT+plotH;
     const bars = months.map((m,i)=>{
-      const bx = padL + i*(barW+gap);
-      const aH = (m.A/maxV)*plotH;
-      const pH = (m.P/maxV)*plotH;
-      const gapSeg = (m.A>0 && m.P>0) ? 2 : 0;
-      const pY = baseY - pH;
-      const aY = pY - gapSeg - aH;
-      let segs = '';
-      if(m.P>0) segs += `<rect class="cx-bar" x="${bx.toFixed(1)}" y="${pY.toFixed(1)}" width="${barW}" height="${pH.toFixed(1)}" rx="4" fill="${CHART_COLORS.P}"><title>${escapeHtml(model.nameP)}: ${money(m.P)}</title></rect>`;
-      if(m.A>0) segs += `<rect class="cx-bar" x="${bx.toFixed(1)}" y="${aY.toFixed(1)}" width="${barW}" height="${aH.toFixed(1)}" rx="4" fill="${CHART_COLORS.A}"><title>${escapeHtml(model.nameA)}: ${money(m.A)}</title></rect>`;
-      const topY = m.A>0 ? aY : (m.P>0 ? pY : baseY);
-      const label = `<text class="cx-label" x="${(bx+barW/2).toFixed(1)}" y="${(topY-8).toFixed(1)}" text-anchor="middle">${money(m.A+m.P)}</text>`;
-      const monthLabel = `<text x="${(bx+barW/2).toFixed(1)}" y="${H-8}" text-anchor="middle" font-size="11">${MONTH_ABBR[m.mm-1]}/${String(m.yyyy).slice(2)}</text>`;
-      return segs+label+monthLabel;
+      const gx = padL + i*(groupW+groupGap);
+      const series = [
+        { v:m.A, color:CHART_COLORS.A, label:model.nameA, isTotal:false },
+        { v:m.P, color:CHART_COLORS.P, label:model.nameP, isTotal:false },
+        { v:m.A+m.P, color:CHART_COLORS.other, label:'Total do mês', isTotal:true }
+      ];
+      const rects = series.map((s,j)=>{
+        if(s.v<=0) return '';
+        const h = Math.max((s.v/maxV)*plotH, 2);
+        const bx = gx + j*(barW+innerGap);
+        const by = baseY - h;
+        const label = s.isTotal ? `<text class="cx-label" x="${(bx+barW/2).toFixed(1)}" y="${(by-8).toFixed(1)}" text-anchor="middle">${money(s.v)}</text>` : '';
+        return `<rect class="cx-bar" x="${bx.toFixed(1)}" y="${by.toFixed(1)}" width="${barW}" height="${h.toFixed(1)}" rx="3" fill="${s.color}"><title>${escapeHtml(s.label)}: ${money(s.v)}</title></rect>${label}`;
+      }).join('');
+      const monthLabel = `<text x="${(gx+groupW/2).toFixed(1)}" y="${H-10}" text-anchor="middle" font-size="11">${MONTH_ABBR[m.mm-1]}/${String(m.yyyy).slice(2)}</text>`;
+      return rects+monthLabel;
     }).join('');
-    monthlyEl.innerHTML = `<div style="overflow-x:auto"><svg class="chart-svg" style="min-width:${Math.max(W,300)}px" viewBox="0 0 ${Math.max(W,300)} ${H}" role="img" aria-label="Quanto foi guardado por mês, total e individual de cada um">
+    monthlyEl.innerHTML = `<div style="overflow-x:auto"><svg class="chart-svg" style="min-width:${Math.max(W,300)}px" viewBox="0 0 ${Math.max(W,300)} ${H}" role="img" aria-label="Quanto foi guardado por mês, separado por pessoa e total">
       <line class="cx-axis" x1="${padL}" y1="${baseY.toFixed(1)}" x2="${W-padR}" y2="${baseY.toFixed(1)}"/>
       ${bars}
     </svg></div>
     <div class="chart-legend">
       <span><span class="sw" style="background:${CHART_COLORS.A}"></span>${escapeHtml(model.nameA)}</span>
       <span><span class="sw" style="background:${CHART_COLORS.P}"></span>${escapeHtml(model.nameP)}</span>
+      <span><span class="sw" style="background:${CHART_COLORS.other}"></span>Total do mês</span>
     </div>`;
   }
 

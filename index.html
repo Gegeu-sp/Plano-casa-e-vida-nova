@@ -215,7 +215,7 @@
   .tabbtn{flex:1; font:inherit; font-size:13.5px; font-weight:600; color:var(--muted); background:none; border:none; border-radius:10px; padding:10px; cursor:pointer}
   .tabbtn.on{background:var(--clay); color:#fff}
   #tab-financeiro[hidden],#tab-acordo[hidden]{display:none}
-  .dash-link{display:block; text-align:center; font:inherit; font-size:12.5px; font-weight:600; color:var(--clay); text-decoration:none; margin-top:12px}
+  .tabbar a.tabbtn{text-decoration:none; display:flex; align-items:center; justify-content:center; text-align:center}
 
   .chartcard{background:var(--card); border:1px solid var(--line); border-radius:16px; margin-top:14px; padding:16px; box-shadow:var(--shadow)}
   .chartcard h3{font-family:'Fraunces',serif; font-size:17px; font-weight:600; margin-bottom:2px}
@@ -294,9 +294,8 @@
   <button class="tabbtn on" data-tab="checklist">📋 Checklist</button>
   <button class="tabbtn" data-tab="financeiro">💰 Financeiro</button>
   <button class="tabbtn" data-tab="acordo">📝 Acordo</button>
+  <a class="tabbtn" href="dashboard.html">📊 Painel</a>
 </div>
-
-<a class="dash-link" href="dashboard.html">📊 Ver painel geral →</a>
 
 <div id="tab-checklist">
 
@@ -867,33 +866,38 @@ function renderMonthlyChart(){
   const months = Object.values(byMonth).sort((a,b)=> a.yyyy-b.yyyy || a.mm-b.mm);
   if(!months.length){ el.innerHTML = '<p class="chart-empty">Nenhum depósito com data registrada ainda.</p>'; return; }
   const maxV = Math.max(...months.map(m=>m.A+m.P), 1);
-  const barW=40, gap=26, padL=50, padR=14, padT=26, padB=30, H=220;
+  const barW=20, innerGap=4, groupGap=26, padL=40, padR=32, padT=26, padB=34, H=220;
   const plotH = H-padT-padB;
-  const totalW = months.length*barW + Math.max(0,months.length-1)*gap;
+  const groupW = barW*3 + innerGap*2;
+  const totalW = months.length*groupW + Math.max(0,months.length-1)*groupGap;
   const W = padL+padR+totalW;
   const baseY = padT+plotH;
   const bars = months.map((m,i)=>{
-    const bx = padL + i*(barW+gap);
-    const aH = (m.A/maxV)*plotH;
-    const pH = (m.P/maxV)*plotH;
-    const gapSeg = (m.A>0 && m.P>0) ? 2 : 0;
-    const pY = baseY - pH;
-    const aY = pY - gapSeg - aH;
-    let segs = '';
-    if(m.P>0) segs += `<rect class="cx-bar" x="${bx.toFixed(1)}" y="${pY.toFixed(1)}" width="${barW}" height="${pH.toFixed(1)}" rx="4" fill="${CHART_COLORS.P}"><title>${escapeHtml(model.nameP)}: ${money(m.P)}</title></rect>`;
-    if(m.A>0) segs += `<rect class="cx-bar" x="${bx.toFixed(1)}" y="${aY.toFixed(1)}" width="${barW}" height="${aH.toFixed(1)}" rx="4" fill="${CHART_COLORS.A}"><title>${escapeHtml(model.nameA)}: ${money(m.A)}</title></rect>`;
-    const topY = m.A>0 ? aY : (m.P>0 ? pY : baseY);
-    const label = `<text class="cx-label" x="${(bx+barW/2).toFixed(1)}" y="${(topY-8).toFixed(1)}" text-anchor="middle">${money(m.A+m.P)}</text>`;
-    const monthLabel = `<text x="${(bx+barW/2).toFixed(1)}" y="${H-8}" text-anchor="middle" font-size="11">${MONTH_ABBR[m.mm-1]}/${String(m.yyyy).slice(2)}</text>`;
-    return segs+label+monthLabel;
+    const gx = padL + i*(groupW+groupGap);
+    const series = [
+      { v:m.A, color:CHART_COLORS.A, label:model.nameA, isTotal:false },
+      { v:m.P, color:CHART_COLORS.P, label:model.nameP, isTotal:false },
+      { v:m.A+m.P, color:CHART_COLORS.other, label:'Total do mês', isTotal:true }
+    ];
+    const rects = series.map((s,j)=>{
+      if(s.v<=0) return '';
+      const h = Math.max((s.v/maxV)*plotH, 2);
+      const bx = gx + j*(barW+innerGap);
+      const by = baseY - h;
+      const label = s.isTotal ? `<text class="cx-label" x="${(bx+barW/2).toFixed(1)}" y="${(by-8).toFixed(1)}" text-anchor="middle">${money(s.v)}</text>` : '';
+      return `<rect class="cx-bar" x="${bx.toFixed(1)}" y="${by.toFixed(1)}" width="${barW}" height="${h.toFixed(1)}" rx="3" fill="${s.color}"><title>${escapeHtml(s.label)}: ${money(s.v)}</title></rect>${label}`;
+    }).join('');
+    const monthLabel = `<text x="${(gx+groupW/2).toFixed(1)}" y="${H-10}" text-anchor="middle" font-size="11">${MONTH_ABBR[m.mm-1]}/${String(m.yyyy).slice(2)}</text>`;
+    return rects+monthLabel;
   }).join('');
-  el.innerHTML = `<div style="overflow-x:auto"><svg class="chart-svg" style="min-width:${Math.max(W,300)}px" viewBox="0 0 ${Math.max(W,300)} ${H}" role="img" aria-label="Quanto foi guardado por mês, total e individual de cada um">
+  el.innerHTML = `<div style="overflow-x:auto"><svg class="chart-svg" style="min-width:${Math.max(W,300)}px" viewBox="0 0 ${Math.max(W,300)} ${H}" role="img" aria-label="Quanto foi guardado por mês, separado por pessoa e total">
     <line class="cx-axis" x1="${padL}" y1="${baseY.toFixed(1)}" x2="${W-padR}" y2="${baseY.toFixed(1)}"/>
     ${bars}
   </svg></div>
   <div class="chart-legend">
     <span><span class="sw" style="background:${CHART_COLORS.A}"></span>${escapeHtml(model.nameA)}</span>
     <span><span class="sw" style="background:${CHART_COLORS.P}"></span>${escapeHtml(model.nameP)}</span>
+    <span><span class="sw" style="background:${CHART_COLORS.other}"></span>Total do mês</span>
   </div>`;
 }
 function renderIndividualChart(){
