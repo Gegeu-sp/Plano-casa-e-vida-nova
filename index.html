@@ -52,7 +52,7 @@
   body{font-family:'Inter',system-ui,sans-serif; background:var(--paper); color:var(--ink);
     line-height:1.45; padding-bottom:70px; max-width:640px; margin:0 auto; -webkit-font-smoothing:antialiased}
   .wrap{padding:0 14px}
-  .chart-grid{display:grid; grid-template-columns:1fr; gap:14px; margin-top:14px}
+  .chart-grid{display:grid; grid-template-columns:1fr; gap:14px; margin-top:14px; align-items:start}
   .chart-grid .chartcard{margin-top:0}
   .eyebrow{font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--clay); font-weight:600}
   h1{font-family:'Fraunces',Georgia,serif; font-weight:900; font-size:clamp(28px,8vw,40px); line-height:1.02; letter-spacing:-.01em; margin:6px 0 4px}
@@ -388,6 +388,12 @@
   <div id="chart-deposits"></div>
 </div>
 
+<div class="chartcard" id="chart-monthly-card">
+  <h3>Guardado por mês</h3>
+  <p class="hint">Total guardado em cada mês, com a parte de cada um empilhada na mesma barra.</p>
+  <div id="chart-monthly"></div>
+</div>
+
 <div class="chartcard" id="chart-individual-card">
   <h3>Quem guardou mais</h3>
   <p class="hint">Comparativo individual — quanto cada um já guardou até agora.</p>
@@ -398,12 +404,6 @@
   <h3>Estimado × comprado × guardado</h3>
   <p class="hint">Quanto custa tudo, quanto já foi comprado e quanto já está guardado (os dois juntos).</p>
   <div id="chart-progress"></div>
-</div>
-
-<div class="chartcard" id="chart-monthly-card">
-  <h3>Guardado por mês</h3>
-  <p class="hint">Total guardado em cada mês, com a parte de cada um empilhada na mesma barra.</p>
-  <div id="chart-monthly"></div>
 </div>
 
 </div>
@@ -940,15 +940,17 @@ function renderDepositsChart(){
 }
 function svgBarChart(bars, ariaLabel){
   const maxV = Math.max(...bars.map(b=>b.value), 1);
-  const W=300, H=200, padB=30, padT=26;
-  const barW=56, gap=30, plotH = H-padB-padT;
-  const totalW = bars.length*barW + (bars.length-1)*gap;
+  const W=300, H=200, padB=30, padT=26, plotH = H-padB-padT;
+  const n = bars.length, gapRatio = 0.45, fillRatio = 0.75;
+  const barW = Math.min(90, Math.max(40, (W*fillRatio) / (n + (n-1)*gapRatio)));
+  const gap = barW*gapRatio;
+  const totalW = n*barW + (n-1)*gap;
   const startX = (W-totalW)/2;
   const barsHtml = bars.map((b,i)=>{
     const h = Math.max((b.value/maxV)*plotH, 2);
     const bx = startX + i*(barW+gap);
     const by = padT + plotH - h;
-    return `<rect class="cx-bar" x="${bx.toFixed(1)}" y="${by.toFixed(1)}" width="${barW}" height="${h.toFixed(1)}" rx="4" fill="${b.color}"><title>${escapeHtml(b.label)}: ${money(b.value)}</title></rect>
+    return `<rect class="cx-bar" x="${bx.toFixed(1)}" y="${by.toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" rx="4" fill="${b.color}"><title>${escapeHtml(b.label)}: ${money(b.value)}</title></rect>
       <text class="cx-label" x="${(bx+barW/2).toFixed(1)}" y="${(by-8).toFixed(1)}" text-anchor="middle">${money(b.value)}</text>
       <text x="${(bx+barW/2).toFixed(1)}" y="${H-8}" text-anchor="middle" font-size="11">${escapeHtml(b.label)}</text>`;
   }).join('');
